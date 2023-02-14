@@ -1,0 +1,88 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        xmlns:Collections="clr-namespace:System.Collections;assembly=System.Runtime.Extensions" x:Class="youtube_dl_v2.Youtube"
+        mc:Ignorable="d"
+        Title="YouTube-dl GUI" Height="660" Width="1200" SizeToContent="WidthAndHeight">
+    <Grid Width="1200" Height="645">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="73*" />
+            <ColumnDefinition Width="327*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="132"/>
+            <RowDefinition Height="479"/>
+            <RowDefinition Height="64"/>
+        </Grid.RowDefinitions>
+        <TreeView Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="17" Height="103" Width="198" Margin="0,150,0,0">
+            <TreeViewItem x:Name="tvYoutube" Header="Youtube" MouseDoubleClick="TreeViewItem_MouseDoubleClick"/>
+            <TreeViewItem x:Name="tvSpotify" Header="Spotify" MouseDoubleClick="TreeViewItem_MouseDoubleClick"/>
+            <TreeViewItem x:Name="tvItemSongList" Header="Song list" MouseDoubleClick="TreeViewItem_MouseDoubleClick"/>
+            <TreeViewItem x:Name="tvItemDownloadedSongs" Header="Downloaded songs" MouseDoubleClick="TreeViewItem_MouseDoubleClick"/>
+        </TreeView>
+        <Canvas Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right" Width="1" Grid.RowSpan="3">
+            <Line
+    X1="0" Y1="0"
+    X2="0" Y2="600"
+    Stroke="Black"
+    StrokeThickness="2" SnapsToDevicePixels="True" HorizontalAlignment="Center" Canvas.Top="19" VerticalAlignment="Top"/>
+        </Canvas>
+        <Grid Margin="0,0,219,0" Grid.RowSpan="2"/>
+        <TextBox x:Name="searchBox" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="131,20,186,423" FontSize="22" TextAlignment="Center" LostFocus="SearchBox_LostFocus"/>
+        <Button Background="Transparent" Click="CmdSearch_Click" Margin="144,23,803,424" Grid.Column="1" Grid.Row="1" RenderTransformOrigin="0.397,0.652" BorderThickness="0,0,0,0">
+            <Image x:Name="searchIcon" Source="/Images/search.png" Stretch="UniformToFill"/>
+        </Button>
+        <Button x:Name="cmdSearch" Content="search" Grid.Column="1" Margin="813,22,60,426" Grid.Row="1" FontSize="18" Click="CmdSearch_Click" IsDefault="True"/>
+        <TextBox x:Name="txtArtist" TextWrapping="Wrap" Grid.Column="1" Margin="214,35,542,69" FontSize="16.5" TextAlignment="Center" TextChanged="TxtArtist_TextChanged" GotFocus="TxtArtist_GotFocus"/>
+        <TextBox x:Name="txtSongname" Grid.Column="1" HorizontalAlignment="Left" Margin="214,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" Height="28" FontSize="16.5" TextAlignment="Center" TextChanged="TxtSongname_TextChanged" GotFocus="TxtSongname_GotFocus"/>
+        <Label x:Name="lblArtist" Content="Artist" Margin="71,32,856,66" Grid.Column="1" FontSize="16.5"/>
+        <Label x:Name="lblSongname" Content="Song name" Margin="71,82,803,10" Grid.Column="1" FontSize="16.5"/>
+        <Label Content="downloader" Grid.Column="1" HorizontalAlignment="Left" Margin="637,66,0,0" VerticalAlignment="Top" Width="192" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift" Height="52"/>
+        <Label Content="You" Grid.Column="1" HorizontalAlignment="Left" Margin="640,23,0,0" VerticalAlignment="Top" FontSize="50" FontFamily="Bahnschrift" Foreground="Black" Height="70" Width="87"/>
+        <Label Content="Tube" Grid.Column="1" HorizontalAlignment="Left" Margin="715,23,0,0" VerticalAlignment="Top" FontSize="50" FontFamily="Bahnschrift" Foreground="#FFF11111" Height="70" Width="114"/>
+        <Label Content="© Kristoferitsch Daniel" Grid.Column="1" Margin="833,477,-16,32" Grid.Row="1" Grid.RowSpan="2"/>
+        <DataGrid x:Name="datagrid" Grid.Column="1" Margin="71,78,60,53" Grid.Row="1" CanUserResizeColumns="False" MinColumnWidth="50" FrozenColumnCount="200" Height="350" RowHeight="70" MinRowHeight="70" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" AutoGenerateColumns="False" IsReadOnly="True" BorderThickness="1,1,1,3">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn x:Name="ColumnThumbnail" Width="90" Header="Thumbnail" IsReadOnly="true">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="cmdThumbnail"  Background="Transparent" MouseDoubleClick="CmdThumbnail_MouseDoubleClick">
+                                <Image Source="{Binding ThumbnailSource}"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn x:Name="ColumnTitle" Width="1,25*" Header="Title" Binding="{Binding Title}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn x:Name="ColumnChannel" Width="0,75*" Header="Channel" Binding="{Binding Channel}"/>
+                <DataGridTextColumn x:Name="ColumnDuration" Width="57" Header="Duration" Binding="{Binding Duration}"/>
+                <DataGridTextColumn x:Name="ColumnID" Width="100" Header="ID" Binding="{Binding ID}"/>
+                <DataGridTemplateColumn x:Name="ColumnAdd" Width="60" Header="" IsReadOnly="true">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <Button x:Name="cmdGridAdd"  Background="Transparent" Height="30" Width="30" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,1,0,0" Click="CmdGridAdd_Click">
+                                    <Image Source="/Images/add.png" SnapsToDevicePixels="True"/>
+                                </Button>
+                                <Button x:Name="cmdPlay" Background="Transparent" Height="30" Width="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,4,0,0" Click="CmdPlay_Click">
+                                    <Image Source="/Images/youtube.png"/>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="cmdRecommend" Content="Select Recommended Song" Grid.Column="1" HorizontalAlignment="Center" Margin="0,442,0,0" Grid.Row="1" VerticalAlignment="Top" Height="44" Width="285" FontSize="20" BorderThickness="2,2,2,2" ClipToBounds="True" Click="CmdRecommend_Click" Grid.RowSpan="2" IsEnabled="False"/>
+        <TextBlock x:Name="txtStatus" TextWrapping="Wrap" Margin="71,2,237,46" Grid.Row="2" Grid.Column="1"><Run/><LineBreak/><Run/><LineBreak/><Run/></TextBlock>
+        <WindowsFormsHost Margin="89,8,126,122" Visibility="Hidden"/>
+    </Grid>
+</Window>

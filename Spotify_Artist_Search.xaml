@@ -1,0 +1,18 @@
+﻿<Window x:Class="youtube_dl_v2.Spotify_Artist_Search"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="Spotify_Artist_Search" Height="210" MinHeight="210" MaxHeight="210" Width="495" MinWidth="495" MaxWidth="495" WindowStartupLocation="CenterScreen" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Label Content="Artist search" HorizontalAlignment="Left" Margin="133,59,0,0" VerticalAlignment="Top" Width="220" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift" Height="52"/>
+        <Label Content="Spotify" HorizontalAlignment="Left" Margin="156,10,0,0" VerticalAlignment="Top" FontSize="50" FontFamily="Bahnschrift" Foreground="#1DB954" Height="70" Width="168"/>
+        <TextBox x:Name="txtsearchBox" TextWrapping="Wrap" Margin="68,118,0,0" FontSize="22" TextAlignment="Center"  VerticalAlignment="Top" HorizontalAlignment="Left" Width="250" Height="30"/>
+        <Button x:Name="cmdSearch" Content="search" FontSize="18" IsDefault="True" Width="75" Height="30" Margin="340,118,64,0" VerticalAlignment="Top" HorizontalAlignment="Left" RenderTransformOrigin="0.473,-0.382" Click="cmdSearch_Click"/>
+        <Button Background="Transparent" Width="23" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="74,122,0,0" BorderThickness="0,0,0,0" Click="cmdSearch_Click">
+            <Image x:Name="searchIcon" Source="/Images/search.png" Stretch="UniformToFill"/>
+        </Button>
+    </Grid>
+</Window>

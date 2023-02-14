@@ -1,0 +1,14 @@
+﻿<Window x:Class="youtube_dl_v2.Spotify_Artist_TopOrAll"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="Spotify_Artist_TopOrAll" Height="220" MinHeight="220" MaxHeight="220"  Width="380" MinWidth="380" MaxWidth="380" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Button x:Name="cmdTop" Content="Top 10 Tracks" HorizontalAlignment="Left" Margin="40,30,0,0" VerticalAlignment="Center" Height="117" Width="130" FontSize="15.5" FontWeight="Bold" Background="#FF1DB954" Foreground="#FFFAFAFA" BorderThickness="1.5,1.5,1.5,1.5" Click="CmdTop_Click"/>
+        <Button x:Name="cmdAll" Content="All Tracks" HorizontalAlignment="Left" Margin="210,30,0,0" VerticalAlignment="Center" Height="117" Width="130" FontSize="15.5" FontWeight="Bold" Background="#FF1DB954" Foreground="#FFFAFAFA" BorderThickness="1.5,1.5,1.5,1.5" Click="CmdAll_Click"/>
+        <Label x:Name="lblTitle"  Content="Which tracks would you like to choose?" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" FontSize="14"/>
+    </Grid>
+</Window>

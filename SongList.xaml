@@ -1,0 +1,43 @@
+﻿<Window x:Class="youtube_dl_v2.SongList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="Song List" Height="683" Width="500" WindowStartupLocation="Manual" Top="2" Left="2"  Loaded="Window_Loaded" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="500" MaxWidth="500" MinHeight="683" MaxHeight="683">
+    <Grid Width="500" Height="667">
+        <Label x:Name="lblTitle" Content="Song List" Margin="0,30,0,0" HorizontalAlignment="Center" Height="54" VerticalAlignment="Top" Width="120" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift Condensed" Grid.Column="1" Grid.ColumnSpan="3"/>
+        <DataGrid x:Name="datagridSongs" VerticalAlignment="Top" RowHeaderWidth="0" Margin="0,103,0,0" AutoGenerateColumns="False" MinHeight="441" MaxHeight="441" MinWidth="400" MaxWidth="400" Grid.ColumnSpan="5" Grid.RowSpan="3" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="4*" FontSize="15" Header="Artist" Binding="{Binding Artist}"/>
+                <DataGridTextColumn Width="5*" FontSize="15" Header="Song" Binding="{Binding Songname}"/>
+                <DataGridTemplateColumn Width="*" Header="Link">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="cmdYT"  Click="CmdYT_Click" Background="Transparent">
+                                <Image Source="/Images/youtube.png"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="cmdRemove" Content="Remove" Margin="50,560,0,0" HorizontalAlignment="Left" Width="60" FontSize="12" VerticalAlignment="Top" Height="32" Click="CmdRemove_Click" MinWidth="70" MaxWidth="70" MinHeight="32" MaxHeight="32"/>
+        <Button x:Name="cmdRemoveAll" Margin="134,560,0,0" Content="Remove All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Width="60" FontSize="12" Click="CmdRemoveAll_Click" MinWidth="70" MaxWidth="70" MinHeight="32" MaxHeight="32" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <Button x:Name="cmdAddSong" Content="Add Song" Margin="216,560,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Click="CmdAddSong_Click" Width="70" Height="32" MinWidth="70" MaxWidth="70" MinHeight="32" MaxHeight="32"/>
+        <Button x:Name="cmdPlaylist" Content="Add Playlist" Margin="299,560,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Click="CmdPlaylist_Click" MinWidth="70" MaxWidth="70" MinHeight="32" MaxHeight="32" Grid.Column="2" Grid.Row="1" RenderTransformOrigin="0.538,0.836"/>
+        <Button x:Name="cmdUpload" Content="Upload .txt" Margin="383,560,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="12" Click="CmdUpload_Click" MinWidth="67" MaxWidth="67" MinHeight="32" MaxHeight="32" RenderTransformOrigin="0.437,-0.486"/>
+        <Button x:Name="cmdDownloadAll" Content="Download All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Width="154" FontSize="12" Click="CmdDownloadAll_Click" MinWidth="100" MinHeight="32" MaxHeight="32" Margin="216,600,0,0" RenderTransformOrigin="0.512,0.48"/>
+        <Button x:Name="cmdDownload" Content="Download" VerticalAlignment="Top" Height="32" FontSize="12" Click="cmdDownload_Click" Width="154" MinHeight="32" MaxHeight="32" Margin="50,600,296,0"/>
+        <ComboBox x:Name="cbxType" Text=".mp3" HorizontalAlignment="Left" Height="24" Margin="383,604,0,0" VerticalAlignment="Top" Width="67" BorderThickness="1,1,1,1" IsReadOnly="True" SelectedIndex="0" SelectionChanged="cbxType_SelectionChanged" SelectedValuePath="Content">
+            <ListViewItem Content=".mp3"/>
+            <ListViewItem Content=".wav"/>
+            <ListViewItem Content=".opus"/>
+            <ListViewItem Content=".m4a"/>
+            <ListViewItem Content=".mp4"/>
+            <ListViewItem Content="automatically select best audio format"/>
+            <ListViewItem Content="automatically select best video format"/>
+        </ComboBox>
+    </Grid>
+</Window>

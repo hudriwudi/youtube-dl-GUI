@@ -1,0 +1,9 @@
+﻿<Application x:Class="youtube_dl_v2.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:youtube_dl_v2"
+             StartupUri="Youtube.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

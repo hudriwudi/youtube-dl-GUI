@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
+    <RootNamespace>youtube_dl_v2</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Images\logo.ico</ApplicationIcon>
+    <AssemblyVersion>0.0.0.18</AssemblyVersion>
+    <FileVersion>0.0.0.18</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+    <Page Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Images\add 2.png" />
+    <None Remove="Images\add.png" />
+    <None Remove="Images\play.png" />
+    <None Remove="Images\search.png" />
+    <None Remove="Images\spotify.png" />
+    <None Remove="Images\youtube.png" />
+    <None Remove="youtube-dl\ffmpeg.exe" />
+    <None Remove="youtube-dl\ffplay.exe" />
+    <None Remove="youtube-dl\ffprobe.exe" />
+    <None Remove="youtube-dl\youtube-dl.exe" />
+    <None Remove="youtube-dl\yt-dlp.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\logo.ico" />
+    <Content Include="youtube-dl\yt-dlp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\spotify.png" />
+    <Resource Include="Images\youtube.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dundas.BI.Core" Version="10.0.0.1006" />
+    <PackageReference Include="EASendMail" Version="7.9.1.3" />
+    <PackageReference Include="FrameworkExtract.System.Deployment" Version="4.0.30319" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.59.0" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.59.0.2958" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.59.0.1869" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.58.0.2874" />
+    <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="OpusDotNet.opus.win-x64" Version="1.3.1" />
+    <PackageReference Include="SpotifyAPI.Web" Version="7.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
+    <PackageReference Include="taglib-sharp-netstandard2.0" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\search.png" />
+    <Resource Include="youtube-dl\ffmpeg.exe" />
+    <Resource Include="youtube-dl\ffplay.exe" />
+    <Resource Include="youtube-dl\ffprobe.exe" />
+    <Resource Include="youtube-dl\youtube-dl.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\Debug\net7.0-windows10.0.17763.0\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+﻿<Window x:Class="youtube_dl_v2.SongList_AddSong"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="New Song" Height="250" Width="400" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label Content="Add New Song" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <Label Content="Artist" Margin="64,51,289,156" FontSize="14"/>
+        <TextBox x:Name="txtArtist" HorizontalAlignment="Left" Margin="132,51,0,0" Text="Rick Astley" TextWrapping="Wrap" VerticalAlignment="Top" Width="209" Height="27" TextAlignment="Center" FontSize="14" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
+        <Label Content="Song" Margin="64,99,289,108" FontSize="14"/>
+        <TextBox x:Name="txtSongname" HorizontalAlignment="Left" Margin="132,99,0,0" Text="Never Gonna Give You Up" TextWrapping="Wrap" VerticalAlignment="Top" Width="209" Height="27" TextAlignment="Center" FontSize="14" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
+        <Label Content="Link" Margin="64,152,289,55" FontSize="14"/>
+        <TextBox x:Name="txtLink"  HorizontalAlignment="Left" Margin="132,145,0,0" Text="https://www.youtube.com/watch?v=dQw4w9WgXcQ" TextWrapping="Wrap" VerticalAlignment="Top" Width="209" Height="41" TextAlignment="Center" FontSize="14" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
+        <Button x:Name="cmdAdd" Content="Add" Margin="289,198,10,10" BorderThickness="2" FontSize="15" Click="CmdAdd_Click" IsDefault="True"/>
+    </Grid>
+</Window>

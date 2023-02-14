@@ -1,0 +1,35 @@
+﻿<Window x:Class="youtube_dl_v2.Downloaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="Downloaded Songs" Height="700" MinHeight="700" MaxHeight="700" Width="500" MinWidth="500" MaxWidth="500" WindowStyle="SingleBorderWindow" WindowStartupLocation="Manual" Top="2" Loaded="Window_Loaded" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="118*"/>
+            <RowDefinition Height="19*"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="lblTitle" Content="Downloaded Songs" HorizontalAlignment="Center" Height="54" VerticalAlignment="Top" Width="228" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift Condensed" Margin="4,25,0,0"/>
+        <DataGrid x:Name="datagridSongs" RowHeaderWidth="0" VerticalAlignment="Bottom" AutoGenerateColumns="False" MaxHeight="494" MinWidth="400" MaxWidth="400" Grid.Row="1" CanUserAddRows="False" Height="494">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="3.5*" FontSize="15" Header="Artist" Binding="{Binding Artist}"/>
+                <DataGridTextColumn Width="5.5*" FontSize="15" Header="Song" Binding="{Binding Songname}"/>
+                <DataGridTemplateColumn Width="*" Header="Link">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="cmdYT" Click="CmdYT_Click" Background="Transparent">
+                                <Image Source="/Images/youtube.png"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="cmdAddSong" Content="Add to song list" Width="100" Height="40" FontSize="13" Grid.Row="2" Click="CmdAddSong_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,21,0,0"/>
+        <Button x:Name="cmdChangeInfo" Content="Change Info" Width="100" Height="40" FontSize="13" Grid.Row="2" Click="CmdChangeInfo_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="195,21,0,0"/>
+        <Button x:Name="cmdMP3" Content="Redownload&#x0a;      .mp3" HorizontalContentAlignment="Center" FontSize="13" Click="cmdMP3_Click" Height="40" Width="100" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="343,21,0,0" />
+    </Grid>
+</Window>

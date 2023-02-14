@@ -1,0 +1,15 @@
+﻿<Window x:Class="youtube_dl_v2.Spotify_Artist_Link"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:youtube_dl_v2"
+        mc:Ignorable="d"
+        Title="Spotify_Artist_Link" Height="240" MinHeight="240" MaxHeight="240" Width="380" MinWidth="380" MaxWidth="380" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid Height="240" MinHeight="240" MaxHeight="240" Width="380" MinWidth="380" MaxWidth="380">
+        <Label x:Name="lblInfo" Content="Please enter the link to the Spotify artist:" VerticalAlignment="Top" Margin="10,59,-10,0" HorizontalAlignment="Center" FontSize="15"/>
+        <TextBox x:Name="txtArtistLink" HorizontalAlignment="Center" Margin="10,95,0,0" TextWrapping="Wrap" Text="https://open.spotify.com/artist/0gxyHStUsqpMadRV0Di1Qt?si=Qqf55D6gT9SspTQpfb0g0A" VerticalAlignment="Top" Width="235" FontSize="15"/>
+        <Label x:Name="lblTitle" Content="Spotify Artist" Margin="0,0,0,7" HorizontalContentAlignment="Center" FontSize="25" FontWeight="Bold"/>
+        <Button x:Name="cmdDone" Content="Done" HorizontalAlignment="Right" VerticalAlignment="Bottom" MaxHeight="36" MinHeight="36" MaxWidth="50" MinWidth="50" Margin="0,0,18,40" FontSize="14" BorderThickness="1.5,1.5,1.5,1.5" IsDefault="True" Click="CmdDone_Click"/>
+    </Grid>
+</Window>

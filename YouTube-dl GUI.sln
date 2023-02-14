@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouTube-dl GUI", "YouTube-dl GUI.csproj", "{EF24B357-FD3E-4F62-8D0B-D27584293F4C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{51B22EAD-29B9-48A2-85C2-A9E76E4CBF3B}"
+	ProjectSection(SolutionItems) = preProject
+		App.config = App.config
+	EndProjectSection
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "yt-dl-GUI-setup", "..\yt-dl-GUI-setup\yt-dl-GUI-setup.vdproj", "{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}.Debug|Any CPU.ActiveCfg = Debug
+		{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F6194BA2-5331-427C-B91B-B2FDBDBFFD2E}
+	EndGlobalSection
+EndGlobal
