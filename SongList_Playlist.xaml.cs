@@ -1,5 +1,4 @@
-﻿using Google.Apis.YouTube.v3.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Windows;
 
@@ -91,7 +90,7 @@ namespace youtube_dl_v2
 
             Close();
         }
-        
+
         private string GetPlaylistWebData(string playListID, string nextPageToken)
         {
             string apiKey = Youtube.DecryptText(ConfigurationManager.AppSettings["APIKey" + ((Youtube)Application.Current.MainWindow).APICredentialsIncrementor]);

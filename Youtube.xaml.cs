@@ -205,8 +205,11 @@ namespace youtube_dl_v2
                     // find out whether it's an official artist channel
                     linkAPI = "https://yt.lemnoslife.com/channels?part=approval&id=" + newSong.ChannelId;
                     webData = GetWebData(linkAPI);
-                    if (webData.Contains("Official Artist Channel"))
-                        newSong.IsOfficialArtistChannel = true;
+                    if (webData != null)
+                    {
+                        if (webData.Contains("Official Artist Channel"))
+                            newSong.IsOfficialArtistChannel = true;
+                    }
 
                     list.Add(newSong);
                 }
@@ -229,20 +232,28 @@ namespace youtube_dl_v2
                 webData = reader.ReadToEnd();
                 webData = HttpUtility.HtmlDecode(webData);
             }
-            catch (HttpRequestException)
+            catch (Exception ex)
             {
-                if (attemptCounter < 5)
+                if (ex is HttpRequestException)
                 {
-                    attemptCounter++;
-                    return GetWebData(link);
+                    if (attemptCounter < 5)
+                    {
+                        attemptCounter++;
+                        return GetWebData(link);
+                    }
+                    else // try with new API Key
+                    {
+                        attemptCounter = 0;
+                        link = link.Remove(link.IndexOf("key=") + 4);
+                        APICredentialsIncrementor++;
+                        link += DecryptText(ConfigurationManager.AppSettings["APIKey" + APICredentialsIncrementor]);
+                        return GetWebData(link);
+                    }
                 }
-                else // try with new API Key
-                {
-                    link = link.Remove(link.IndexOf("key=") + 4);
-                    APICredentialsIncrementor++;
-                    link += DecryptText(ConfigurationManager.AppSettings["APIKey" + APICredentialsIncrementor]);
-                    return GetWebData(link);
-                }
+                else if (ex is InvalidOperationException) // crash report -> was thrown when accessing https://yt.lemnoslife.com/channels?part=approval&id=ChannelID, wasn't able to recreate the exception
+                    return null;
+                else
+                    throw;
             }
 
             if (webData.Contains("quotaExceeded"))
