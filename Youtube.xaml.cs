@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using Octokit;
 using MessageBox = System.Windows.MessageBox;
 
 namespace youtube_dl_v2
@@ -56,6 +57,45 @@ namespace youtube_dl_v2
         protected override void OnContentRendered(EventArgs e)
         {
             base.OnContentRendered(e);
+
+            // check if there is a newer version available
+            
+            string currentVersion = "v0.0.20"; // change when releasing new version
+            string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
+
+            Process process = new Process();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.StandardInput.WriteLine(cmd);
+            process.StandardInput.Flush();
+            process.StandardInput.Close();
+            string processOutput = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            string newestVersion = processOutput[(processOutput.IndexOf("name") +  8)..(processOutput.IndexOf("zipball_url") - 8)];
+
+            if (currentVersion != newestVersion)
+            {
+                MessageBoxResult result =
+                MessageBox.Show("A newer version is available." +
+                            "\n\nCurrent version:    " + currentVersion +
+                              "\nAvailable version:  " + newestVersion +
+                            "\n\nWould you like to install the newest version?\n" +
+                                "Clicking yes will start the download.",
+                                "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    string link = "https://github.com/hudriwudi/youtube-dl-GUI/releases/download/" + newestVersion + "/yt-dl-GUI-setup.msi";
+                    Process.Start("explorer.exe", link); // opens link in default browser
+                }
+            }
+
+            
 
             string path = Directory.GetCurrentDirectory().ToString() + "\\downloaded songs";
             if (!Directory.Exists(path))
@@ -455,11 +495,15 @@ namespace youtube_dl_v2
             else
                 link = "https://www.youtube.com/watch?v=" + chosenSong.ID;
 
-            Process process = new();
-            process.StartInfo.UseShellExecute = true;
-            process.StartInfo.FileName = "chrome.exe";
-            process.StartInfo.Arguments = link;
-            process.Start();
+            // opens link in default browser
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = "cmd",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow= true,
+                Arguments = "/C start" + " " + link
+            };
+            Process.Start(startInfo);
         }
 
         private void TxtArtist_GotFocus(object sender, RoutedEventArgs e)

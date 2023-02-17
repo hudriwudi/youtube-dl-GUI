@@ -167,11 +167,15 @@ namespace youtube_dl_v2
             else
                 link = "https://www.youtube.com/watch?v=" + chosenSong.ID;
 
-            Process process = new();
-            process.StartInfo.UseShellExecute = true;
-            process.StartInfo.FileName = "chrome.exe";
-            process.StartInfo.Arguments = link;
-            process.Start();
+            // opens link in default browser
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = "cmd",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                Arguments = "/C start" + " " + link
+            };
+            Process.Start(startInfo);
         }
 
         private void cmdMP3_Click(object sender, RoutedEventArgs e)
