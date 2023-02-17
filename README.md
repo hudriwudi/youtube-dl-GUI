@@ -6,7 +6,7 @@ This program incorporates youtube-dl. The developer is in no way associated with
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
 ## Download
-[Pre-Release (v.0.0.19)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v0.0.20)
+[Pre-Release (v0.0.20)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v0.0.20)
 
 [Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v0.0.20/yt-dl-GUI-setup.msi)
 
