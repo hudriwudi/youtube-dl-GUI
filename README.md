@@ -20,4 +20,4 @@ This program is made for **Windows only**. Other platforms are not supported.
 Disclaimer: The program requires admin-access to be able to write, store and access files.
 
 © Kristoferitsch Daniel
-17.02.2023
+18.02.2023
