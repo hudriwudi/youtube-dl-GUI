@@ -31,8 +31,8 @@ namespace youtube_dl_v2
 
                 string subject = "YouTube-dl GUI => Unhandled Exception Report";
                 string body = "<pre>" +
-                              "The following crash report has been sent:\n\n" +
-                              "version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                              "The following crash report has been sent:" +
+                            "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
                               "\nUser: " + Environment.UserName +
                               "\n\nException Message:\n" + ex.Message +
                               "\n\nException Data:\n" + ex.Data.ToString() +
@@ -48,7 +48,7 @@ namespace youtube_dl_v2
         }
 
         // https://mailtrap.io/blog/csharp-send-email-gmail/
-        private void SendEmail(string subject, string body)
+        public static void SendEmail(string subject, string body)
         {
             var email = new MimeMessage();
 

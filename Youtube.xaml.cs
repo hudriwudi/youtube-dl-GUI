@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
@@ -58,12 +59,27 @@ namespace youtube_dl_v2
         {
             base.OnContentRendered(e);
 
-            // check if there is a newer version available
+            // notify developer that the download was completed
+
+            string filepath = Environment.CurrentDirectory + @"\Installation completed.txt";
+            if (!File.Exists(filepath))
+            {
+                string subject = "YouTube-dl GUI => Installation completed";
+                string textBody = "<pre>" + 
+                                  "This email notifies of the successful completion of an installation." +
+                              "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                                "\nUser: " + Environment.UserName +
+                                  "<pre>";
+                App.SendEmail(subject, textBody);
+                File.WriteAllText(filepath, "This file exists to check whether the installation was completed.");
+            }
+
+            // check whether there is a newer version available
             
-            string currentVersion = "v0.0.20"; // change when releasing new version
+            string currentVersion = "v0.0.21"; // change when releasing new version
             string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
 
-            Process process = new Process();
+            Process process = new();
             process.StartInfo.FileName = "cmd.exe";
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;

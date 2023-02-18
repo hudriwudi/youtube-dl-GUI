@@ -6,9 +6,9 @@ This program incorporates youtube-dl. The developer is in no way associated with
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
 ## Download
-[Pre-Release (v0.0.20)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v0.0.20)
+[Pre-Release (v0.0.21)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v0.0.21)
 
-[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v0.0.20/yt-dl-GUI-setup.msi)
+[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v0.0.21/yt-dl-GUI-setup.msi)
 
 For the installation to be successful, downloading .Net Core 7.0.0 is necessary. This can be done under [this link](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer?cid=getdotnetcore).
 
