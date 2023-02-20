@@ -19,7 +19,7 @@ This program is made for **Windows only**. Other platforms are not supported.
 
 ## Disclaimer
 * The program requires admin-access to be able to write, store and access files.
-* Due to the developer not commercially acquiring a software certificate, most antivirus-software will display a warning before the installation.
+* Due to the developer not commercially acquiring an EV-certificate, most antivirus-software will display a warning before the installation. (click "more infos" -> "run anyway")
 
 © Kristoferitsch Daniel
 21.02.2023
