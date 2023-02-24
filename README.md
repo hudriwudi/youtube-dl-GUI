@@ -22,4 +22,4 @@ This program is made for **Windows only**. Other platforms are not supported.
 * Due to the developer not commercially acquiring an EV-certificate, most antivirus-software will display a warning before the installation. (click "more infos" -> "run anyway")
 
 © Kristoferitsch Daniel
-21.02.2023
+25.02.2023
