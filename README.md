@@ -1,7 +1,7 @@
 # YouTube-dl GUI
 GUI for downloading YouTube videos (+ additional features). Mainly designed for downloading music.
 
-This program incorporates youtube-dl. The developer is in no way associated with the authors of youtube-dl.
+This program incorporates yt-dlp. The developer is in no way associated with the authors of yt-dlp or youtube-dl.
 
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
@@ -17,7 +17,9 @@ This program is made for **Windows only**. Other platforms are not supported.
 ## Bug reports
 [GitHub Issues](https://github.com/hudriwudi/youtube-dl-GUI/issues/new)
 
-Disclaimer: The program requires admin-access to be able to write, store and access files.
+## Disclaimer
+* The program requires admin-access to be able to write, store and access files.
+* Due to the developer not commercially acquiring an EV-certificate, most antivirus-software will display a warning before the installation. (click "more infos" -> "run anyway")
 
 © Kristoferitsch Daniel
-18.02.2023
+21.02.2023
