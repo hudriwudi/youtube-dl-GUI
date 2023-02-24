@@ -76,6 +76,12 @@ namespace youtube_dl_v2
                         reader.ReadToFollowing("Link");
                         song.Link = reader.ReadElementContentAsString();
 
+                        reader.ReadToFollowing("Album");
+                        song.Album = reader.ReadElementContentAsString();
+
+                        reader.ReadToFollowing("Genres");
+                        song.Genres = reader.ReadElementContentAsString();
+
                         song.XmlFilePath = file.FullName;
                         song.IndexInFile = i + 1; // not starting at index 0, but at 1
                         i++;

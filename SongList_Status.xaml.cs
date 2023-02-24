@@ -1,10 +1,13 @@
-﻿using SpotifyAPI.Web;
+﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Subjects;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -290,8 +293,29 @@ namespace youtube_dl_v2
                     MessageBox.Show("Unfortunately the following songs couldn't be downloaded:\n\n" + failedsongsmessage +
                                   "\nA slow internet connection might have lead to a timeout." +
                                   "\nIf the video is age restricted by YouTube, it won't be possible to download it." +
-                                  "\nPlease try again. If the problem persists, don't hesitate contacting the developer.",
+                                  "\nPlease try again." +
+                                  "\n\nA report has been sent to the developer.",
                                   "Failed Downloads", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    // send report to developer
+                    string subject = "YouTube-dl GUI => Failed Download";
+                    string textBody = "<pre>" +
+                                      "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                                    "\nUser: " + Environment.UserName +
+                                  "\n\nThe download of the following songs has failed:" + 
+                                      "<pre>";
+
+                    foreach (var song in FinalFailedDownloads)
+                    {
+                        failedsongsmessage += "\n\n" + song.Artist + " - " + song.Songname +
+                                                "\n" + song.Link +
+                                                "\n" + song.Album +
+                                                "\n" + song.Genres;
+                    }
+
+                    textBody += failedsongsmessage;
+
+                    App.SendEmail(subject, textBody);
                 }
             }
             allSongsDownloaded = true;
@@ -353,6 +377,17 @@ namespace youtube_dl_v2
             xmlWriter.WriteString(song.Link);
             xmlWriter.WriteEndElement();
             xmlWriter.WriteWhitespace("\n");
+
+            xmlWriter.WriteStartElement("Album");
+            xmlWriter.WriteString(song.Album);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteWhitespace("\n");
+
+            xmlWriter.WriteStartElement("Genres");
+            xmlWriter.WriteString(song.Genres);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteWhitespace("\n");
+
             xmlWriter.WriteEndElement();
             xmlWriter.WriteWhitespace("\n\n");
         }

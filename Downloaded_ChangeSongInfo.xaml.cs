@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TagLib.Id3v2;
 
 namespace youtube_dl_v2
 {
@@ -24,11 +24,35 @@ namespace youtube_dl_v2
             this.song = song;
             this.filePath = filePath;
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             txtArtist.Text = song.Artist;
             txtSongname.Text = song.Songname;
             txtLink.Text = song.Link;
+            txtAlbum.Text = song.Album;
+
+            if (song.Genres != null)
+            {
+                string tempGenres = song.Genres;
+                List<string> genres = new List<string>();
+                int index;
+                do
+                {
+                    index = tempGenres.IndexOf(';');
+                    if (index != -1)
+                    {
+                        string genre = tempGenres[0..index];
+                        genres.Add(genre);
+                        tempGenres.Remove(0, index);
+                    }
+                }
+                while (index != -1);
+
+                txtGenres_1.Text = genres[0];
+                txtGenres_2.Text = genres[1];
+                txtGenres_3.Text = genres[2];
+            }
 
             txtArtist.Focus();
             txtArtist.SelectAll();
@@ -41,6 +65,21 @@ namespace youtube_dl_v2
             song.Artist = txtArtist.Text;
             song.Songname = txtSongname.Text;
             song.Link = txtLink.Text;
+            song.Album = txtAlbum.Text;
+
+            string genres = txtGenres_1.Text + ";" + txtGenres_2.Text + ";" + txtGenres_3.Text;
+
+            int index1 = genres.IndexOf(';');
+            int index2 = genres.LastIndexOf(';');
+
+            if (index1 == 0 || index1 + 1 == index2)
+                genres.Remove(index1);
+
+            if (index2 == genres.Length - 1)
+                genres.Remove(index2);
+
+            song.Genres = genres;
+
 
             var myFile = new FileInfo(filePath);
 

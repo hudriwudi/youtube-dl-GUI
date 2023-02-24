@@ -15,7 +15,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml;
-using Octokit;
 using MessageBox = System.Windows.MessageBox;
 
 namespace youtube_dl_v2
@@ -65,7 +64,7 @@ namespace youtube_dl_v2
             if (!File.Exists(filepath))
             {
                 string subject = "YouTube-dl GUI => Installation completed";
-                string textBody = "<pre>" + 
+                string textBody = "<pre>" +
                                   "This email notifies of the successful completion of an installation." +
                               "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
                                 "\nUser: " + Environment.UserName +
@@ -75,8 +74,8 @@ namespace youtube_dl_v2
             }
 
             // check whether there is a newer version available
-            
-            string currentVersion = "v0.0.21"; // change when releasing new version
+
+            string currentVersion = "v0.0.22"; // change when releasing new version
             string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
 
             Process process = new();
@@ -92,7 +91,7 @@ namespace youtube_dl_v2
             string processOutput = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
 
-            string newestVersion = processOutput[(processOutput.IndexOf("name") +  8)..(processOutput.IndexOf("zipball_url") - 8)];
+            string newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
 
             if (currentVersion != newestVersion)
             {
@@ -111,7 +110,7 @@ namespace youtube_dl_v2
                 }
             }
 
-            
+
 
             string path = Directory.GetCurrentDirectory().ToString() + "\\downloaded songs";
             if (!Directory.Exists(path))
@@ -516,7 +515,7 @@ namespace youtube_dl_v2
             {
                 FileName = "cmd",
                 WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow= true,
+                CreateNoWindow = true,
                 Arguments = "/C start" + " " + link
             };
             Process.Start(startInfo);
