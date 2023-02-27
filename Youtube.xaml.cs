@@ -93,7 +93,22 @@ namespace youtube_dl_v2
                 string processOutput = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
 
-                string newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
+                string newestVersion = null;
+                try
+                {
+                    newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
+                }
+                catch (Exception) // crash report happened -> for debug purposes
+                {
+                    string subject = "YouTube-dl GUI => Exception caught";
+                    string textBody = "<pre>" +
+                                      "processOutput:\n\n" +
+                                       processOutput + 
+                                  "\n\nnewest Version: " + newestVersion;
+                    App.SendEmail(subject, textBody);
+
+                    throw;
+                }
 
                 if (currentVersion != newestVersion)
                 {
