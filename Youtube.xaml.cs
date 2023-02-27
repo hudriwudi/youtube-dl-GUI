@@ -60,8 +60,8 @@ namespace youtube_dl_v2
 
             // notify developer that the download was completed
 
-            string filepath = Environment.CurrentDirectory + @"\Installation completed.txt";
-            if (!File.Exists(filepath))
+            string path = Environment.CurrentDirectory + @"\Installation completed.txt";
+            if (!File.Exists(path))
             {
                 string subject = "YouTube-dl GUI => Installation completed";
                 string textBody = "<pre>" +
@@ -70,60 +70,97 @@ namespace youtube_dl_v2
                                 "\nUser: " + Environment.UserName +
                                   "<pre>";
                 App.SendEmail(subject, textBody);
-                File.WriteAllText(filepath, "This file exists to check whether the installation was completed.");
+                File.WriteAllText(path, "This file exists to check whether the installation was completed.");
             }
 
             // check whether there is a newer version available
 
-            string currentVersion = "v0.0.22"; // change when releasing new version
-            string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
-
-            Process process = new();
-            process.StartInfo.FileName = "cmd.exe";
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.UseShellExecute = false;
-            process.Start();
-            process.StandardInput.WriteLine(cmd);
-            process.StandardInput.Flush();
-            process.StandardInput.Close();
-            string processOutput = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            string newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
-
-            if (currentVersion != newestVersion)
+            if (IsConnectedToInternet())
             {
-                MessageBoxResult result =
-                MessageBox.Show("A newer version is available." +
-                            "\n\nCurrent version:    " + currentVersion +
-                              "\nAvailable version:  " + newestVersion +
-                            "\n\nWould you like to install the newest version?\n" +
-                                "Clicking yes will start the download.",
-                                "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                string currentVersion = "v1.0.0"; // change when releasing new version
+                string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
 
-                if (result == MessageBoxResult.Yes)
+                Process process = new();
+                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.UseShellExecute = false;
+                process.Start();
+                process.StandardInput.WriteLine(cmd);
+                process.StandardInput.Flush();
+                process.StandardInput.Close();
+                string processOutput = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+
+                string newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
+
+                if (currentVersion != newestVersion)
                 {
-                    string link = "https://github.com/hudriwudi/youtube-dl-GUI/releases/download/" + newestVersion + "/yt-dl-GUI-setup.msi";
-                    Process.Start("explorer.exe", link); // opens link in default browser
+                    MessageBoxResult result =
+                    MessageBox.Show("A newer version is available." +
+                                "\n\nCurrent version:    " + currentVersion +
+                                  "\nAvailable version:  " + newestVersion +
+                                "\n\nWould you like to install the newest version?\n" +
+                                    "Clicking yes will start the download.",
+                                    "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        string link = "https://github.com/hudriwudi/youtube-dl-GUI/releases/download/" + newestVersion + "/yt-dl-GUI-setup.msi";
+                        Process.Start("explorer.exe", link); // opens link in default browser
+                    }
                 }
             }
 
 
+            // check wheter any crash reports have been stored and send them
 
-            string path = Directory.GetCurrentDirectory().ToString() + "\\downloaded songs";
+            var tempFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt*");
+            List<string> txtFiles = new List<string>();
+
+            foreach (string file in tempFiles)
+            {
+                if (file.Contains("Crash report"))
+                    txtFiles.Add(file);
+            }
+
+            if (txtFiles.Count != 0)
+            {
+                StreamReader reader;
+                foreach (string file in txtFiles)
+                {
+                    reader = new StreamReader(file);
+                    string text = reader.ReadToEnd();
+                    reader.Close();
+
+                    int startIndex = 9; // "Subject: "
+                    int stopIndex = text.IndexOf("Body:") - 2;
+                    string subject = text[startIndex..stopIndex];
+
+                    startIndex = text.IndexOf("Body:") + 6; // "Body: "
+                    stopIndex = text.Length;
+                    string textBody = text[startIndex..stopIndex];
+
+                    File.Delete(file);
+
+                    App.SendEmail(subject, textBody);
+                }
+            }
+
+
+            path = Directory.GetCurrentDirectory().ToString() + "\\downloaded songs";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            // delete excess, oldest 15 files
+            // delete excess, oldest 20 files
             if (Directory.Exists(path))
             {
                 int count = Directory.GetFiles(path).Length;
-                if (count > 15)
+                if (count > 20)
                 {
                     List<FileInfo> files = new DirectoryInfo(path).GetFiles().OrderByDescending(f => f.LastWriteTime).ToList();
-                    for (int i = 15; i < files.Count; i++)
+                    for (int i = 20; i < files.Count; i++)
                     {
                         files[i].Delete();
                     }
@@ -440,33 +477,28 @@ namespace youtube_dl_v2
 
         private void CmdGridAdd_Click(object sender, RoutedEventArgs e)
         {
-            AddToSongList(datagrid.SelectedIndex);
+            AddToSongList();
         }
 
         private void CmdRecommend_Click(object sender, RoutedEventArgs e)
         {
             int index = Spotify.RankYoutubeSearch(searchList, 0, false);
             datagrid.SelectedIndex = index;
-            AddToSongList(index);
+            AddToSongList();
         }
 
-        private void AddToSongList(int index)
+        private void AddToSongList()
         {
             Song song = (Song)datagrid.SelectedItem;
-            if (index != -1)
-            {
-                song.Artist = txtArtist.Text;
-                song.Songname = txtSongname.Text;
-                songList.Add(song);
-            }
-            else
-                txtStatus.Text = "Adding to list impossible. No search element selected.";
+            song.Artist = txtArtist.Text;
+            song.Songname = txtSongname.Text;
+            songList.Add(song);
 
             if (winSongList != null)
                 if (winSongList.IsVisible)
                     winSongList.Close();
 
-            winSongList = new SongList(songList);
+            winSongList = new(songList);
             winSongList.Owner = this;
             winSongList.Show();
         }
@@ -576,6 +608,35 @@ namespace youtube_dl_v2
             }
 
             return decryptedBytes;
+        }
+
+        // *the following 3 functions are not my code*
+        // https://stackoverflow.com/questions/660554/how-to-automatically-select-all-text-on-focus-in-wpf-textbox
+
+        private void txtBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            TextBox txtBox = sender as TextBox;
+            // Fixes issue when clicking cut/copy/paste in context menu
+            if (txtBox.SelectionLength == 0)
+                txtBox.SelectAll();
+        }
+
+        private void txtBox_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            TextBox txtBox = sender as TextBox;
+            // If user highlights some text, don't override it
+            if (txtBox.SelectionLength == 0)
+                txtBox.SelectAll();
+
+            // further clicks will not select all
+            txtBox.LostMouseCapture -= txtBox_LostMouseCapture;
+        }
+
+        private void txtBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            TextBox txtBox = sender as TextBox;
+            // once we've left the txtBox, return the select all behavior
+            txtBox.LostMouseCapture += txtBox_LostMouseCapture;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MimeKit;
 using System;
 using System.Configuration;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 
@@ -16,40 +17,40 @@ namespace youtube_dl_v2
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
         }
 
-        // catch unhandled exception and send bug report to ytdlguibugreports@gmail.com
+        // catch unhandled exception and send crash report to ytdlguibugreports@gmail.com
         public void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            bool programIsInDebugMode = false; // change when releasing/debugging (debug -> true; release -> false)
+            Exception ex = (Exception)e.ExceptionObject;
 
-            if (!programIsInDebugMode)
-            {
-                Exception ex = (Exception)e.ExceptionObject;
-
-                MessageBox.Show("An unhandled exception just occurred:\n" + ex.Message + "\n\n" + "A report has been automatically sent to the developer.\nThe program will now close. Sorry for the inconvenience.",
-                                                         "Unhandled Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("An unhandled exception just occurred:\n" + ex.Message + "\n\n" + "A report has been automatically sent to the developer.\nThe program will now close. Sorry for the inconvenience.",
+                                                     "Unhandled Exception", MessageBoxButton.OK, MessageBoxImage.Error);
 
 
-                string subject = "YouTube-dl GUI => Unhandled Exception Report";
-                string body = "<pre>" +
-                              "The following crash report has been sent:" +
-                            "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
-                              "\nUser: " + Environment.UserName +
-                              "\n\nException Message:\n" + ex.Message +
-                              "\n\nException Data:\n" + ex.Data.ToString() +
-                              "\n\nException Source:\n" + ex.Source +
-                              "\n\nException InnerException:\n" + ex.InnerException +
-                              "\n\nException TargetSite:\n" + ex.TargetSite +
-                              "\n\nException StackTrace:\n" + ex.StackTrace +
-                              "</pre>";
+            string subject = "YouTube-dl GUI => Unhandled Exception Report";
+            string body = "<pre>" +
+                          "The following crash report has been sent:" +
+                        "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                          "\nUser: " + Environment.UserName +
+                          "\n\nException Message:\n" + ex.Message +
+                          "\n\nException Data:\n" + ex.Data.ToString() +
+                          "\n\nException Source:\n" + ex.Source +
+                          "\n\nException InnerException:\n" + ex.InnerException +
+                          "\n\nException TargetSite:\n" + ex.TargetSite +
+                          "\n\nException StackTrace:\n" + ex.StackTrace +
+                          "</pre>";
 
-                SendEmail(subject, body);
-            }
-
+            SendEmail(subject, body);
         }
 
         // https://mailtrap.io/blog/csharp-send-email-gmail/
         public static void SendEmail(string subject, string body)
         {
+            if (!Youtube.IsConnectedToInternet())
+            {
+                StoreMail(subject, body, 1);
+                return;
+            }
+
             var email = new MimeMessage();
 
             email.From.Add(new MailboxAddress("YouTube-dl GUI Bug reporting", "ytdlguibugreports@gmail.com"));
@@ -73,6 +74,24 @@ namespace youtube_dl_v2
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
+            }
+        }
+
+        private static void StoreMail(string subject, string body, int counter)
+        {
+            try
+            {
+                string filepath = Environment.CurrentDirectory + @"\Crash report (" + counter + ").txt";
+                string filecontent = "Subject:\n" +
+                                      subject +
+                                 "\n\nBody:\n" +
+                                      body;
+                File.WriteAllText(filepath, filecontent);
+            }
+            catch (IOException) // file already exists
+            {
+                counter++;
+                StoreMail(subject, body, counter);
             }
         }
     }

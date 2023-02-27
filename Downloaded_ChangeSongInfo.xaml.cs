@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,7 +42,7 @@ namespace youtube_dl_v2
                     {
                         string genre = tempGenres[0..index];
                         genres.Add(genre);
-                        tempGenres.Remove(0, index);
+                        tempGenres = tempGenres.Remove(0, index + 1);
                     }
                 }
                 while (index != -1);

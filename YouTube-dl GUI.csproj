@@ -8,8 +8,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Images\logo.ico</ApplicationIcon>
-    <AssemblyVersion>0.0.0.22</AssemblyVersion>
-    <FileVersion>0.0.0.22</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,9 +35,6 @@
 
   <ItemGroup>
     <Content Include="Images\logo.ico" />
-    <Content Include="youtube-dl\yt-dlp.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +57,7 @@
     <Resource Include="youtube-dl\ffplay.exe" />
     <Resource Include="youtube-dl\ffprobe.exe" />
     <Resource Include="youtube-dl\youtube-dl.exe" />
+    <Resource Include="youtube-dl\yt-dlp.exe" />
   </ItemGroup>
 
   <ItemGroup>

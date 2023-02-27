@@ -126,7 +126,7 @@ namespace youtube_dl_v2
                 return;
             SpotifyClient spotifyClient = new(token);
 
-            int i = 0;
+            int songIndex = 0;
             foreach (var song in songList)
             {
                 if (worker.CancellationPending == true) // window has been closed -> cancel backgroundworker
@@ -160,17 +160,17 @@ namespace youtube_dl_v2
                     }
                 }
 
-                i++;
-                worker.ReportProgress(i, song.Artist + " - " + song.Songname);
+                songIndex++;
+                worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
             }
 
             downloadStarted = true;
             worker.ReportProgress(0, "Download started...");
 
-            i = 0;
+            songIndex = 0;
             foreach (var song in songList)
             {
-                i++;
+                songIndex++;
 
                 if (song.Link == null)
                     song.Link = "https://www.youtube.com/watch?v=" + song.ID;
@@ -182,7 +182,7 @@ namespace youtube_dl_v2
                     try
                     {
                         if (!filePath.Contains(".exe"))
-                            System.IO.File.Delete(filePath);
+                            File.Delete(filePath);
                     }
                     catch (IOException) // file is still used by another process -> delete later
                     { }
@@ -193,28 +193,7 @@ namespace youtube_dl_v2
                 cmd.StandardInput.Flush();
                 cmd.StandardInput.Close();
 
-                string strPreviousOutput = "";
-                bool outputStarted = false;
-                bool exit = false;
-                do
-                {
-                    string cmdOutput = cmd.StandardOutput.ReadLine();
-
-                    if (cmdOutput.Contains("ETA") && cmdOutput != strPreviousOutput)
-                    {
-                        worker.ReportProgress(0, song.Artist + " - " + song.Songname + "\n" + cmdOutput); // display download progress
-                        outputStarted = true;
-                    }
-
-                    strPreviousOutput = cmdOutput;
-
-                    if (outputStarted && !cmdOutput.Contains("ETA"))
-                    {
-                        exit = true;
-                        worker.ReportProgress(i, song.Artist + " - " + song.Songname);
-                    }
-                }
-                while (!cmd.HasExited && !exit);
+                ReportCmdProgress(song, songIndex);
 
                 cmd.WaitForExit();
 
@@ -245,9 +224,9 @@ namespace youtube_dl_v2
                     try
                     {
                         if (!filePath.Contains(".exe"))
-                            System.IO.File.Delete(filePath);
+                            File.Delete(filePath);
                     }
-                    catch (System.IO.IOException) // exception thrown if file is still used by another thread
+                    catch (IOException) // exception thrown if file is still used by another thread
                     { }
                 }
 
@@ -255,18 +234,28 @@ namespace youtube_dl_v2
                 Thread.Sleep(500);
 
                 // retry skipped songs
-                i = 1;
+                songIndex = 1;
                 foreach (var song in FailedDownloads)
                 {
+                    // update yt-dlp
+                    cmd.Start();
+                    cmd.StandardInput.WriteLine("yt-dlp -U");
+                    cmd.StandardInput.Flush();
+                    cmd.StandardInput.Close();
+                    cmd.WaitForExit();
+
+                    // retry download
                     cmd.Start();
                     cmd.StandardInput.WriteLine(strCmdText + song.Link);
                     cmd.StandardInput.Flush();
                     cmd.StandardInput.Close();
 
+                    ReportCmdProgress(song, songIndex);
+
                     Task delay = Task.Delay(30000); // 30000ms = 30s
                     Task.WhenAny(cmd.WaitForExitAsync(), delay).Wait(); // if the song isn't downloaded after 30s, it is skipped
 
-                    worker.ReportProgress(i, song.Artist + " - " + song.Songname);
+                    worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
 
                     ChangeProperties(song);
 
@@ -276,7 +265,7 @@ namespace youtube_dl_v2
                         return;
                     }
 
-                    i++;
+                    songIndex++;
                 }
 
                 worker.ReportProgress(0, "All songs downloaded.");
@@ -291,7 +280,6 @@ namespace youtube_dl_v2
                     }
 
                     MessageBox.Show("Unfortunately the following songs couldn't be downloaded:\n\n" + failedsongsmessage +
-                                  "\nA slow internet connection might have lead to a timeout." +
                                   "\nIf the video is age restricted by YouTube, it won't be possible to download it." +
                                   "\nPlease try again." +
                                   "\n\nA report has been sent to the developer.",
@@ -319,6 +307,37 @@ namespace youtube_dl_v2
                 }
             }
             allSongsDownloaded = true;
+        }
+
+        private void ReportCmdProgress(Song song, int songIndex)
+        {
+            string strPreviousOutput = "";
+            bool outputStarted = false;
+            bool exit = false;
+            try
+            {
+                do
+                {
+                    string cmdOutput = cmd.StandardOutput.ReadLine();
+
+                    if (cmdOutput.Contains("ETA") && cmdOutput != strPreviousOutput)
+                    {
+                        worker.ReportProgress(0, song.Artist + " - " + song.Songname + "\n" + cmdOutput); // display download progress
+                        outputStarted = true;
+                    }
+
+                    strPreviousOutput = cmdOutput;
+
+                    if (outputStarted && !cmdOutput.Contains("ETA"))
+                    {
+                        exit = true;
+                        worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
+                    }
+                }
+                while (!cmd.HasExited && !exit);
+            }
+            catch (InvalidOperationException)
+            { } // worker already closed
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -419,7 +438,11 @@ namespace youtube_dl_v2
             catch (InvalidOperationException) // no files found
             {
                 if (!retryDownload)
+                {
                     FailedDownloads.Add(song);
+                    worker.ReportProgress(0, song.Artist + " - " + song.Songname +
+                                           "\ndownload failed - song was skipped");
+                }
                 else
                     FinalFailedDownloads.Add(song);
 

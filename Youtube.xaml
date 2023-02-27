@@ -31,13 +31,13 @@
     StrokeThickness="2" SnapsToDevicePixels="True" HorizontalAlignment="Center" Canvas.Top="19" VerticalAlignment="Top"/>
         </Canvas>
         <Grid Margin="0,0,219,0" Grid.RowSpan="2"/>
-        <TextBox x:Name="searchBox" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="131,20,186,423" FontSize="22" TextAlignment="Center" LostFocus="SearchBox_LostFocus"/>
+        <TextBox x:Name="searchBox" Grid.Row="1" Grid.Column="1" TextWrapping="Wrap" Margin="131,20,186,423" FontSize="22" TextAlignment="Center" LostFocus="SearchBox_LostFocus" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
         <Button Background="Transparent" Click="CmdSearch_Click" Margin="144,23,803,424" Grid.Column="1" Grid.Row="1" RenderTransformOrigin="0.397,0.652" BorderThickness="0,0,0,0">
             <Image x:Name="searchIcon" Source="/Images/search.png" Stretch="UniformToFill"/>
         </Button>
         <Button x:Name="cmdSearch" Content="search" Grid.Column="1" Margin="813,22,60,426" Grid.Row="1" FontSize="18" Click="CmdSearch_Click" IsDefault="True"/>
-        <TextBox x:Name="txtArtist" TextWrapping="Wrap" Grid.Column="1" Margin="214,35,542,69" FontSize="16.5" TextAlignment="Center" TextChanged="TxtArtist_TextChanged" GotFocus="TxtArtist_GotFocus"/>
-        <TextBox x:Name="txtSongname" Grid.Column="1" HorizontalAlignment="Left" Margin="214,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" Height="28" FontSize="16.5" TextAlignment="Center" TextChanged="TxtSongname_TextChanged" GotFocus="TxtSongname_GotFocus"/>
+        <TextBox x:Name="txtArtist" TextWrapping="Wrap" Grid.Column="1" Margin="214,35,542,69" FontSize="16.5" TextAlignment="Center" TextChanged="TxtArtist_TextChanged" GotFocus="TxtArtist_GotFocus" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
+        <TextBox x:Name="txtSongname" Grid.Column="1" HorizontalAlignment="Left" Margin="214,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="225" Height="28" FontSize="16.5" TextAlignment="Center" TextChanged="TxtSongname_TextChanged" GotFocus="TxtSongname_GotFocus" GotKeyboardFocus="txtBox_GotKeyboardFocus" LostMouseCapture="txtBox_LostMouseCapture" LostKeyboardFocus="txtBox_LostKeyboardFocus"/>
         <Label x:Name="lblArtist" Content="Artist" Margin="71,32,856,66" Grid.Column="1" FontSize="16.5"/>
         <Label x:Name="lblSongname" Content="Song name" Margin="71,82,803,10" Grid.Column="1" FontSize="16.5"/>
         <Label Content="downloader" Grid.Column="1" HorizontalAlignment="Left" Margin="637,66,0,0" VerticalAlignment="Top" Width="192" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift" Height="52"/>
@@ -82,7 +82,6 @@
             </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="cmdRecommend" Content="Select Recommended Song" Grid.Column="1" HorizontalAlignment="Center" Margin="0,442,0,0" Grid.Row="1" VerticalAlignment="Top" Height="44" Width="285" FontSize="20" BorderThickness="2,2,2,2" ClipToBounds="True" Click="CmdRecommend_Click" Grid.RowSpan="2" IsEnabled="False"/>
-        <TextBlock x:Name="txtStatus" TextWrapping="Wrap" Margin="71,2,237,46" Grid.Row="2" Grid.Column="1"><Run/><LineBreak/><Run/><LineBreak/><Run/></TextBlock>
         <WindowsFormsHost Margin="89,8,126,122" Visibility="Hidden"/>
     </Grid>
 </Window>
