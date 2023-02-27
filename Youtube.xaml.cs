@@ -77,7 +77,7 @@ namespace youtube_dl_v2
 
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.0"; // change when releasing new version
+                string currentVersion = "v1.0.1"; // change when releasing new version
                 string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
 
                 Process process = new();
