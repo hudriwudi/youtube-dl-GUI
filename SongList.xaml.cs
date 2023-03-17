@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Http;
 using System.Web;
 using System.Windows;
+using System.Windows.Input;
 
 namespace youtube_dl_v2
 {
@@ -20,6 +21,7 @@ namespace youtube_dl_v2
         public List<Song> songList = new();
         public bool IsNotConnectedToInternet;
         string downloadType = ".mp3";
+        List<List<Song>> removedSongsList = new();
 
         public SongList(List<Song> songList)
         {
@@ -36,10 +38,17 @@ namespace youtube_dl_v2
         {
             if (datagridSongs.SelectedIndex != -1)
             {
+                List<Song> removedSongs = new();
+
                 for (int i = datagridSongs.SelectedItems.Count - 1; i >= 0; i--)
                 {
-                    songList.Remove((Song)datagridSongs.SelectedItems[i]);
+                    Song selectedSong = (Song)datagridSongs.SelectedItems[i];
+                    songList.Remove(selectedSong);
+
+                    removedSongs.Add(selectedSong);
                 }
+
+                removedSongsList.Add(removedSongs);
 
                 UpdateDatagrid();
             }
@@ -47,7 +56,9 @@ namespace youtube_dl_v2
 
         private void CmdRemoveAll_Click(object sender, RoutedEventArgs e)
         {
-            songList.Clear();
+            var songList_copy = songList;
+            removedSongsList.Add(songList_copy);
+            songList = new();
             UpdateDatagrid();
         }
 
@@ -288,6 +299,24 @@ namespace youtube_dl_v2
         private void cbxType_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             downloadType = cbxType.SelectedValue.ToString();
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            // restoring deleted songs by pressing Ctrl + Z
+            if (e.Key == System.Windows.Input.Key.Z && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                if (removedSongsList.Count != 0)
+                {
+                    songList.AddRange(removedSongsList[removedSongsList.Count - 1]);
+                    removedSongsList.RemoveAt(removedSongsList.Count - 1);
+                    UpdateDatagrid();
+                }
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+                CmdRemove_Click(null, null);
         }
     }
 }

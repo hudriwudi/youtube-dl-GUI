@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+﻿using ATL;
 using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +22,8 @@ namespace youtube_dl_v2
         public List<Song> songList = new();
         List<Song> FailedDownloads = new();
         List<Song> FinalFailedDownloads = new();
+        List<Song> NonConvertableFiles = new();
+        List<Song> SuccessfulDownloads = new();
         Process cmd;
         XmlWriter xmlWriter;
         BackgroundWorker worker;
@@ -33,6 +34,7 @@ namespace youtube_dl_v2
         string strCmdText;
         string downloadType;
         string extension;
+        string subject, textBody;
 
         public SongList_Status(List<Song> songList, string downloadType)
         {
@@ -199,6 +201,7 @@ namespace youtube_dl_v2
 
                 ChangeProperties(song);
 
+
                 if (worker.CancellationPending == true) // window has been closed -> cancel backgroundworker
                 {
                     e.Cancel = true;
@@ -206,6 +209,9 @@ namespace youtube_dl_v2
                 }
 
                 WriteToXmlFile(song);
+
+                if (FailedDownloads.IndexOf(song) == -1 && NonConvertableFiles.IndexOf(song) == -1)
+                    SuccessfulDownloads.Add(song);
             }
 
             worker.ReportProgress(0, "All songs downloaded.");
@@ -286,11 +292,11 @@ namespace youtube_dl_v2
                                   "Failed Downloads", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     // send report to developer
-                    string subject = "YouTube-dl GUI => Failed Download";
-                    string textBody = "<pre>" +
+                    subject = "YouTube-dl GUI => Failed Download";
+                    textBody = "<pre>" +
                                       "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
                                     "\nUser: " + Environment.UserName +
-                                  "\n\nThe download of the following songs has failed:" + 
+                                  "\n\nThe download of the following songs has failed:" +
                                       "<pre>";
 
                     foreach (var song in FinalFailedDownloads)
@@ -306,6 +312,45 @@ namespace youtube_dl_v2
                     App.SendEmail(subject, textBody);
                 }
             }
+
+            if (NonConvertableFiles.Count != 0)
+            {
+                // send report and display message -> files couldn't be converted
+                string reportMessage = "";
+                foreach (var element in NonConvertableFiles)
+                {
+                    reportMessage += "\n\nArtist: " + element.Artist +
+                                       "\nSongname: " + element.Songname +
+                                       "\nLink: " + element.Link +
+                                       "\nAlbum: " + element.Album +
+                                       "\nGenres: " + element.Genres;
+                }
+
+                subject = "YouTube-dl GUI => FFMPEG conversion failed";
+                textBody = "<pre>" +
+                           "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                         "\nUser: " + Environment.UserName +
+                       "\n\nThe following songs couln't be converted by ffmpeg:\n\n" +
+                            reportMessage +
+                           "<pre>";
+
+                App.SendEmail(subject, textBody);
+            }
+
+            subject = "YouTube-dl GUI => Download completed";
+            textBody = "<pre>" +
+                       "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                     "\nUser: " + Environment.UserName +
+                   "\n\nThis email notifies of the completion of a download." +
+                   "\n\nDownloaded songs: " + songList.Count +
+                     "\nRetried downloads: " + FailedDownloads.Count +
+                     "\nFailed downloads: " + FinalFailedDownloads.Count +
+                     "\nFailed conversions: " + NonConvertableFiles.Count +
+                     "\nSuccessful downloads: " + SuccessfulDownloads.Count +
+                       "<pre>";
+
+            App.SendEmail(subject, textBody);
+
             allSongsDownloaded = true;
         }
 
@@ -449,40 +494,27 @@ namespace youtube_dl_v2
                 return;
             }
 
-            // access ffmpeg to edit metadata of file
-
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.WorkingDirectory = @"youtube-dl\";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-
             song.Artist = RemoveForbiddenCharacters(song.Artist);
             song.Songname = RemoveForbiddenCharacters(song.Songname);
 
-            string strCmdText = "ffmpeg -i " + '"' + myFile.FullName + '"' + " -metadata title=" + '"' + song.Songname + '"' + " -metadata artist=" + '"' + song.Artist + '"' + " -metadata album=" + '"' + song.Album + '"' + " -metadata comment=" + '"' + song.Link + '"' + " -c copy " + '"' + myFile.FullName + '"';
-            strCmdText = strCmdText.Insert(strCmdText.LastIndexOf('.'), "(2)");
+            // edit metadata of file using ATL.NET
+            // https://github.com/Zeugma440/atldotnet
 
-            cmd.Start();
-            cmd.StandardInput.WriteLine(strCmdText);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
+            Track track = new(myFile.FullName);
+            track.Artist = song.Artist;
+            track.Title = song.Songname;
+            track.Album = song.Album;
+            track.Genre = song.Genres;
+            track.Comment = song.Link;
+            track.Save();
 
-            // ffmpeg can't overwrite existing files -> stored under new name -> myFile has to be assigned to new file
-            myFile = new(myFile.FullName.Insert(myFile.FullName.LastIndexOf('.'), "(2)"));
-
-            string songInfo = song.Artist + " - " + song.Songname;
-
-            MoveFile(myFile, songInfo, "music/youtube-dl", 0);
+            MoveFile(myFile, song, "music/youtube-dl", 0);
         }
 
         public string RemoveForbiddenCharacters(string source)
         {
             // remove unwanted characters to be able to save the file
-            char[] forbiddenCharacters = { '"', '*', '<', '>', '?', '\\', '|', '/', ':' };
+            char[] forbiddenCharacters = { '"', '＂', '*', '<', '>', '?', '？', '\\', '|', '｜', '/', '⧸', ':', '：' };
 
             foreach (char character in forbiddenCharacters)
             {
@@ -494,6 +526,27 @@ namespace youtube_dl_v2
                         source = source.Remove(source.IndexOf(character), 1);
                 }
             }
+
+            // replace umlaute
+
+            if (source.Contains('ä'))
+                source = source.Replace("ä", "ae");
+
+            if (source.Contains('Ä'))
+                source = source.Replace("Ä", "Ae");
+
+            if (source.Contains('ö'))
+                source = source.Replace("ö", "oe");
+
+            if (source.Contains('Ö'))
+                source = source.Replace("Ö", "Oe");
+
+            if (source.Contains('ü'))
+                source = source.Replace("ü", "ue");
+
+            if (source.Contains('Ü'))
+                source = source.Replace("Ü", "Ue");
+
 
             return source;
         }
@@ -508,8 +561,10 @@ namespace youtube_dl_v2
             return source;
         }
 
-        public void MoveFile(FileInfo file, string songInfo, string destination, int accountsOfFile)
+        public void MoveFile(FileInfo file, Song song, string destination, int accountsOfFile)
         {
+            string songInfo = song.Artist + " - " + song.Songname;
+
             // move file and change file name            
             try
             {
@@ -540,12 +595,17 @@ namespace youtube_dl_v2
                 if (ex is DirectoryNotFoundException)
                 {
                     Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + @"\youtube-dl");
-                    MoveFile(file, songInfo, "music/youtube-dl", accountsOfFile);
+                    MoveFile(file, song, "music/youtube-dl", accountsOfFile);
                 }
-                else if (ex is IOException)
+                else if (ex is IOException && !(ex is FileNotFoundException)) // file already exists
                 {
                     accountsOfFile++;
-                    MoveFile(file, songInfo, destination, accountsOfFile);
+                    MoveFile(file, song, destination, accountsOfFile);
+                }
+                else if (ex is FileNotFoundException)
+                {
+                    // file eg: ...(2).mp3 not found -> ffmpeg hasn't worked, as only file without (2) exists
+                    NonConvertableFiles.Add(song);
                 }
             }
         }

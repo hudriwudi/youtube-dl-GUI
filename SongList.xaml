@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:youtube_dl_v2"
         mc:Ignorable="d"
-        Title="Song List" Height="683" Width="500" WindowStartupLocation="Manual" Top="2" Left="2"  Loaded="Window_Loaded" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="500" MaxWidth="500" MinHeight="683" MaxHeight="683">
+        Title="Song List" Height="683" Width="500" WindowStartupLocation="Manual" Top="2" Left="2"  Loaded="Window_Loaded" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="500" MaxWidth="500" MinHeight="683" MaxHeight="683" KeyDown="Window_KeyDown" PreviewKeyDown="Window_PreviewKeyDown">
     <Grid Width="500" Height="667">
         <Label x:Name="lblTitle" Content="Song List" Margin="0,30,0,0" HorizontalAlignment="Center" Height="54" VerticalAlignment="Top" Width="120" FontSize="35" FontWeight="Bold" FontFamily="Bahnschrift Condensed" Grid.Column="1" Grid.ColumnSpan="3"/>
         <DataGrid x:Name="datagridSongs" VerticalAlignment="Top" RowHeaderWidth="0" Margin="0,103,0,0" AutoGenerateColumns="False" MinHeight="441" MaxHeight="441" MinWidth="400" MaxWidth="400" Grid.ColumnSpan="5" Grid.RowSpan="3" CanUserAddRows="False">

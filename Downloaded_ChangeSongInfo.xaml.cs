@@ -109,7 +109,7 @@ namespace youtube_dl_v2
             string tempFileName = newFileName.Insert(newFileName.LastIndexOf("."), "(2)");
             myFile = new(tempFileName);
 
-            winSongList_Status.MoveFile(myFile, songInfo, newFileName, 0);
+            winSongList_Status.MoveFile(myFile, song, newFileName, 0);
 
             File.Delete(filePath); // delete original file
 
