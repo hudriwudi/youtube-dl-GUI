@@ -61,7 +61,7 @@ namespace youtube_dl_v2
             // notify developer that the download was completed
 
             string path = Environment.CurrentDirectory + @"\Installation completed.txt";
-            if (!File.Exists(path))
+            if (!File.Exists(path) && Environment.UserName != "Daniel")
             {
                 string subject = "YouTube-dl GUI => Installation completed";
                 string textBody = "<pre>" +
@@ -70,6 +70,7 @@ namespace youtube_dl_v2
                                 "\nUser: " + Environment.UserName +
                                   "<pre>";
                 App.SendEmail(subject, textBody);
+
                 File.WriteAllText(path, "This file exists to check whether the installation was completed.");
             }
 
@@ -77,7 +78,7 @@ namespace youtube_dl_v2
 
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.2"; // change when releasing new version
+                string currentVersion = "v1.0.2.1"; // change when releasing new version
                 string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
 
                 Process process = new();

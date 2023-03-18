@@ -73,11 +73,11 @@ namespace youtube_dl_v2
                     strCmdText = "yt-dlp -S res,ext:mp4:m4a --recode mp4 ";
                     break;
 
-                case "automatically select best audio format":
+                case "best audio format":
                     strCmdText = "yt-dlp -f bestaudio ";
                     break;
 
-                case "automatically select best video format":
+                case "best video format":
                     strCmdText = "yt-dlp -f bestvideo+bestaudio ";
                     break;
             }
@@ -526,27 +526,6 @@ namespace youtube_dl_v2
                         source = source.Remove(source.IndexOf(character), 1);
                 }
             }
-
-            // replace umlaute
-
-            if (source.Contains('ä'))
-                source = source.Replace("ä", "ae");
-
-            if (source.Contains('Ä'))
-                source = source.Replace("Ä", "Ae");
-
-            if (source.Contains('ö'))
-                source = source.Replace("ö", "oe");
-
-            if (source.Contains('Ö'))
-                source = source.Replace("Ö", "Oe");
-
-            if (source.Contains('ü'))
-                source = source.Replace("ü", "ue");
-
-            if (source.Contains('Ü'))
-                source = source.Replace("Ü", "Ue");
-
 
             return source;
         }

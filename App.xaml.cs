@@ -8,6 +8,7 @@ using System.Windows;
 namespace youtube_dl_v2
 {
     /// <summary>
+    /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application

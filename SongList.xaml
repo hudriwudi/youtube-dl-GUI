@@ -36,8 +36,8 @@
             <ListViewItem Content=".opus"/>
             <ListViewItem Content=".m4a"/>
             <ListViewItem Content=".mp4"/>
-            <ListViewItem Content="automatically select best audio format"/>
-            <ListViewItem Content="automatically select best video format"/>
+            <ListViewItem Content="best audio format"/>
+            <ListViewItem Content="best video format"/>
         </ComboBox>
     </Grid>
 </Window>
