@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:youtube_dl_v2"
              StartupUri="xaml-files\Youtube.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

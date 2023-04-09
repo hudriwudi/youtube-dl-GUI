@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:youtube_dl_v2"
         mc:Ignorable="d"
-        Title="Downloaded Songs" Height="700" MinHeight="700" MaxHeight="700" Width="500" MinWidth="500" MaxWidth="500" WindowStyle="SingleBorderWindow" WindowStartupLocation="Manual" Top="2" Loaded="Window_Loaded" SizeToContent="WidthAndHeight">
+        Title="Downloaded Songs" Height="700" MinHeight="700" MaxHeight="700" Width="500" MinWidth="500" MaxWidth="500" WindowStyle="SingleBorderWindow" WindowStartupLocation="Manual" Top="2" Loaded="Window_Loaded" SizeToContent="WidthAndHeight" PreviewKeyDown="Window_PreviewKeyDown">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -28,8 +28,9 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button x:Name="cmdAddSong" Content="Add to song list" Width="100" Height="40" FontSize="13" Grid.Row="2" Click="CmdAddSong_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,21,0,0"/>
-        <Button x:Name="cmdChangeInfo" Content="Change Info" Width="100" Height="40" FontSize="13" Grid.Row="2" Click="CmdChangeInfo_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="195,21,0,0"/>
-        <Button x:Name="cmdMP3" Content="Redownload&#x0a;      .mp3" HorizontalContentAlignment="Center" FontSize="13" Click="cmdMP3_Click" Height="40" Width="100" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="343,21,0,0" />
+        <Button x:Name="cmdAddSong" Content="Add to song list" Width="100" Height="40" FontSize="13" Grid.Row="2" Click="CmdAddSong_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="43,20,0,0"/>
+        <Button x:Name="cmdDelete" Content="Delete" HorizontalContentAlignment="Center" FontSize="13" Click="cmdDelete_Click" Height="40" Width="70" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="154,0,0,0"/>
+        <Button x:Name="cmdChangeInfo" Content="Change Info" Width="95" Height="40" FontSize="13" Grid.Row="2" Click="CmdChangeInfo_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="236,0,0,0"/>
+        <Button x:Name="cmdMP3" Content="Redownload&#x0a;      .mp3" HorizontalContentAlignment="Center" FontSize="13" Click="cmdMP3_Click" Height="40" Width="100" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="343,0,0,0" />
     </Grid>
 </Window>

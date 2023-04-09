@@ -1,6 +1,7 @@
 ﻿using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -467,6 +468,14 @@ namespace youtube_dl_v2
             winSongList = new SongList(songList);
             winSongList.Owner = this;
             winSongList.ShowDialog();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Youtube winYoutube = (Youtube)this.Owner;
+            winYoutube.Show();
+
+            base.OnClosing(e);
         }
     }
 }

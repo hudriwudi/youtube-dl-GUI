@@ -104,7 +104,7 @@ namespace youtube_dl_v2
             string link2 = "&fields=nextPageToken%2C%20prevPageToken%2C%20items(contentDetails%2FvideoId%2C%20status%2C%20snippet%2Ftitle%2C%20snippet%2FvideoOwnerChannelTitle)&key=";
             string fullLink = link1 + playListID + pageToken + link2 + apiKey;
 
-            string webData = ((Youtube)Application.Current.MainWindow).GetWebData(fullLink);
+            string webData = ((Youtube)Application.Current.MainWindow).GetWebData(fullLink, null);
 
             if (webData.Contains("error") && webData.Contains("quota")) // quota exceeded
             {

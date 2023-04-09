@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Xml;
+using Windows.ApplicationModel.VoiceCommands;
 
 namespace youtube_dl_v2
 {
@@ -206,6 +208,56 @@ namespace youtube_dl_v2
                 winSongList = new(songList);
                 winSongList.Owner = this;
                 winSongList.Show();
+            }
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete)
+            {
+                DeleteFromXMLFile();
+            }
+        }
+
+        private void cmdDelete_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteFromXMLFile();
+        }
+
+        private void DeleteFromXMLFile()
+        {
+            if (datagridSongs.SelectedIndex != -1)
+            {
+                List<DownloadedSong> selectedSongs = new();
+
+                for (int i = datagridSongs.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    selectedSongs.Add((DownloadedSong)datagridSongs.SelectedItems[i]);
+                }
+
+                foreach (var song in selectedSongs)
+                {
+                    string path = song.XmlFilePath;
+                    XmlDocument xmlDoc = new();
+                    xmlDoc.Load(path);
+
+                    XmlNodeList nodeList = xmlDoc.SelectNodes("/Songs/Song/Name");
+                    foreach (XmlNode node in nodeList)
+                    {
+                        if (node.InnerText == song.Songname)
+                        {
+                            XmlNode parentNode = node.ParentNode;
+                            XmlNode topNode = parentNode.ParentNode;
+                            topNode.RemoveChild(parentNode);
+                            break;
+                        }
+                    }
+
+                    string newPath = path.Insert(path.Length - 4, "(2)");
+                    xmlDoc.Save(newPath);
+                    File.Delete(path);
+                    File.Move(newPath, path);
+                }
             }
         }
     }

@@ -4,7 +4,9 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -78,54 +80,45 @@ namespace youtube_dl_v2
 
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.2.1"; // change when releasing new version
-                string cmd = "curl -X GET https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags";
-
-                Process process = new();
-                process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.UseShellExecute = false;
-                process.Start();
-                process.StandardInput.WriteLine(cmd);
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-                string processOutput = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-
+                string currentVersion = "v1.0.3"; // change when releasing new version
                 string newestVersion = null;
-                try
-                {
-                    newestVersion = processOutput[(processOutput.IndexOf("name") + 8)..(processOutput.IndexOf("zipball_url") - 8)];
-                }
-                catch (Exception) // crash report happened -> for debug purposes
-                {
-                    string subject = "YouTube-dl GUI => Exception caught";
-                    string textBody = "<pre>" +
-                                      "processOutput:\n\n" +
-                                       processOutput +
-                                  "\n\nnewest Version: " + newestVersion;
-                    App.SendEmail(subject, textBody);
 
-                    throw;
-                }
+                AuthenticationHeaderValue header = new("User-Agent", "hudriwudi");
+                string data = GetWebData("https://api.github.com/repos/hudriwudi/youtube-dl-GUI/tags", header);
 
-                if (currentVersion != newestVersion)
+                if (!data.Contains("Request forbidden"))
                 {
-                    MessageBoxResult result =
-                    MessageBox.Show("A newer version is available." +
-                                "\n\nCurrent version:    " + currentVersion +
-                                  "\nAvailable version:  " + newestVersion +
-                                "\n\nWould you like to install the newest version?\n" +
-                                    "Clicking yes will start the download.",
-                                    "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    newestVersion = data[(data.IndexOf("name") + 7)..(data.IndexOf("zipball_url") - 3)];
 
-                    if (result == MessageBoxResult.Yes)
+                    if (currentVersion != newestVersion)
                     {
-                        string link = "https://github.com/hudriwudi/youtube-dl-GUI/releases/download/" + newestVersion + "/yt-dl-GUI-setup.msi";
-                        Process.Start("explorer.exe", link); // opens link in default browser
+                        MessageBoxResult result =
+                        MessageBox.Show("A newer version is available." +
+                                    "\n\nCurrent version:    " + currentVersion +
+                                      "\nAvailable version:  " + newestVersion +
+                                    "\n\nWould you like to install the newest version?\n" +
+                                        "Clicking yes will start the download.",
+                                        "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            string link = "https://github.com/hudriwudi/youtube-dl-GUI/releases/download/" + newestVersion + "/yt-dl-GUI-setup.msi";
+                            Process.Start("explorer.exe", link); // opens link in default browser
+                        }
                     }
+                }
+                else
+                {
+                    // send report
+                    string subject = "YouTube-dl GUI => Access To GitHub API Denied";
+                    string textBody = "<pre>" +
+                                      "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                                    "\nUser: " + Environment.UserName +
+                                  "\n\nInformation about the newest release couldn't be accessed." +
+                                  "\n\nResponse:\n" + data +
+                                      "<pre>";
+
+                    App.SendEmail(subject, textBody);
                 }
             }
 
@@ -197,6 +190,7 @@ namespace youtube_dl_v2
                 case "Spotify":
                     this.Hide();
                     winSpotify = new Spotify(songList);
+                    winSpotify.Owner = this;
                     if (!winSpotify.unableToConnect)
                         winSpotify.Show();
                     break;
@@ -228,7 +222,7 @@ namespace youtube_dl_v2
             string link2 = "&fields=items(id%2FvideoId%2Csnippet(thumbnails%2Fdefault%2Furl%2Ctitle%2C%20channelTitle%2C%20channelId))&uploadType=video&key=";
             string fullLink = link1 + searchtext + link2 + apiKey;
 
-            string webData = GetWebData(fullLink);
+            string webData = GetWebData(fullLink, null);
 
             if (quotaExceeded)
                 return QuotaExceeded(searchtext, maxResults);
@@ -288,7 +282,7 @@ namespace youtube_dl_v2
 
                     // access API again to obtain duration time
                     string linkAPI = "https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails%2C%20snippet%2C%20statistics&id=" + newSong.ID + "&fields=items(contentDetails%2Fduration%2C%20snippet%2Fdescription%2C%20statistics%2FviewCount)&key=" + apiKey;
-                    webData = GetWebData(linkAPI);
+                    webData = GetWebData(linkAPI, null);
 
                     if (quotaExceeded)
                         return QuotaExceeded(searchtext, maxResults);
@@ -310,14 +304,17 @@ namespace youtube_dl_v2
                     stopIndex = webData.IndexOf('}', startIndex) - 8;
                     newSong.ViewCount = Convert.ToDouble(webData[startIndex..stopIndex]);
 
+                    /* the following snippet is currently commented out as it drastically slowed down performance time
+                    
                     // find out whether it's an official artist channel
                     linkAPI = "https://yt.lemnoslife.com/channels?part=approval&id=" + newSong.ChannelId;
-                    webData = GetWebData(linkAPI);
+                    webData = GetWebData(linkAPI, null);
                     if (webData != null)
                     {
                         if (webData.Contains("Official Artist Channel"))
                             newSong.IsOfficialArtistChannel = true;
                     }
+                    */
 
                     list.Add(newSong);
                 }
@@ -328,13 +325,15 @@ namespace youtube_dl_v2
             return list;
         }
 
-        public string GetWebData(string link)
+        public string GetWebData(string link, AuthenticationHeaderValue header)
         {
             string webData;
             try
             {
                 HttpClient client = new();
                 var request = new HttpRequestMessage(HttpMethod.Get, link);
+                if (header != null)
+                    client.DefaultRequestHeaders.Add(header.Scheme, header.Parameter);
                 var response = client.Send(request);
                 var reader = new StreamReader(response.Content.ReadAsStream());
                 webData = reader.ReadToEnd();
@@ -347,7 +346,7 @@ namespace youtube_dl_v2
                     if (attemptCounter < 5)
                     {
                         attemptCounter++;
-                        return GetWebData(link);
+                        return GetWebData(link, null);
                     }
                     else // try with new API Key
                     {
@@ -355,7 +354,7 @@ namespace youtube_dl_v2
                         link = link.Remove(link.IndexOf("key=") + 4);
                         APICredentialsIncrementor++;
                         link += DecryptText(ConfigurationManager.AppSettings["APIKey" + APICredentialsIncrementor]);
-                        return GetWebData(link);
+                        return GetWebData(link, null);
                     }
                 }
                 else if (ex is InvalidOperationException) // crash report -> was thrown when accessing https://yt.lemnoslife.com/channels?part=approval&id=ChannelID, wasn't able to recreate the exception
