@@ -28,4 +28,4 @@ For this purpose, the developer recommends using [MP3Gain](https://mp3gain.sourc
 Direct download available [here](https://sourceforge.net/projects/mp3gain/files/MP3Gain-Windows%20%28Stable%29/1.2.5/mp3gain-win-1_2_5.exe/download).
 
 © Kristoferitsch Daniel
-04.06.2023S
+04.06.2023
