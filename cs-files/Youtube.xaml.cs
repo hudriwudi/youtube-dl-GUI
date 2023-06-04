@@ -62,25 +62,27 @@ namespace youtube_dl_v2
 
             // notify developer that the download was completed
 
-            string path = Environment.CurrentDirectory + @"\Installation completed.txt";
-            if (!File.Exists(path) && Environment.UserName != "Daniel")
-            {
-                string subject = "YouTube-dl GUI => Installation completed";
-                string textBody = "<pre>" +
-                                  "This email notifies of the successful completion of an installation." +
-                              "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
-                                "\nUser: " + Environment.UserName +
-                                  "<pre>";
-                App.SendEmail(subject, textBody);
-
-                File.WriteAllText(path, "This file exists to check whether the installation was completed.");
-            }
-
-            // check whether there is a newer version available
-
+            string path;
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.3"; // change when releasing new version
+                string currentVersion = "v1.0.4"; // change when releasing new version
+
+                path = Environment.CurrentDirectory + @"\Installation completed (" + currentVersion + ").txt";
+                if (!File.Exists(path) && Environment.UserName != "Daniel")
+                {
+                    string subject = "YouTube-dl GUI => Installation completed";
+                    string textBody = "<pre>" +
+                                      "This email notifies of the successful completion of an installation." +
+                                  "\n\nVersion: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() +
+                                    "\nUser: " + Environment.UserName +
+                                      "<pre>";
+                    App.SendEmail(subject, textBody);
+
+                    File.WriteAllText(path, "This file exists to check whether the installation was completed.");
+                }
+
+                // check whether there is a newer version available
+
                 string newestVersion = null;
 
                 AuthenticationHeaderValue header = new("User-Agent", "hudriwudi");
@@ -120,40 +122,40 @@ namespace youtube_dl_v2
 
                     App.SendEmail(subject, textBody);
                 }
-            }
 
 
-            // check wheter any crash reports have been stored and send them
+                // check wheter any crash reports have been stored and send them
 
-            var tempFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt*");
-            List<string> txtFiles = new List<string>();
+                var tempFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt*");
+                List<string> txtFiles = new List<string>();
 
-            foreach (string file in tempFiles)
-            {
-                if (file.Contains("Crash report"))
-                    txtFiles.Add(file);
-            }
-
-            if (txtFiles.Count != 0)
-            {
-                StreamReader reader;
-                foreach (string file in txtFiles)
+                foreach (string file in tempFiles)
                 {
-                    reader = new StreamReader(file);
-                    string text = reader.ReadToEnd();
-                    reader.Close();
+                    if (file.Contains("Crash report"))
+                        txtFiles.Add(file);
+                }
 
-                    int startIndex = 9; // "Subject: "
-                    int stopIndex = text.IndexOf("Body:") - 2;
-                    string subject = text[startIndex..stopIndex];
+                if (txtFiles.Count != 0)
+                {
+                    StreamReader reader;
+                    foreach (string file in txtFiles)
+                    {
+                        reader = new StreamReader(file);
+                        string text = reader.ReadToEnd();
+                        reader.Close();
 
-                    startIndex = text.IndexOf("Body:") + 6; // "Body: "
-                    stopIndex = text.Length;
-                    string textBody = text[startIndex..stopIndex];
+                        int startIndex = 9; // "Subject: "
+                        int stopIndex = text.IndexOf("Body:") - 2;
+                        string subject = text[startIndex..stopIndex];
 
-                    File.Delete(file);
+                        startIndex = text.IndexOf("Body:") + 6; // "Body: "
+                        stopIndex = text.Length;
+                        string textBody = text[startIndex..stopIndex];
 
-                    App.SendEmail(subject, textBody);
+                        File.Delete(file);
+
+                        App.SendEmail(subject, textBody);
+                    }
                 }
             }
 
@@ -497,7 +499,7 @@ namespace youtube_dl_v2
 
         private void CmdRecommend_Click(object sender, RoutedEventArgs e)
         {
-            int index = Spotify.RankYoutubeSearch(searchList, 0, false);
+            int index = Spotify.RankYoutubeSearch(searchList, 0, artist, false);
             datagrid.SelectedIndex = index;
             AddToSongList();
         }

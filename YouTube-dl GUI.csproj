@@ -8,8 +8,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Images\logo.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,20 +44,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Genius.NET" Version="4.0.1" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
     <PackageReference Include="OpusDotNet.opus.win-x64" Version="1.3.1" />
     <PackageReference Include="SpotifyAPI.Web" Version="7.0.0" />
     <PackageReference Include="taglib-sharp-netstandard2.0" Version="2.1.0" />
-    <PackageReference Include="z440.atl.core" Version="4.23.0" />
+    <PackageReference Include="z440.atl.core" Version="4.31.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Images\search.png" />
-    <Resource Include="youtube-dl\ffmpeg.exe" />
-    <Resource Include="youtube-dl\ffplay.exe" />
-    <Resource Include="youtube-dl\ffprobe.exe" />
-    <Resource Include="youtube-dl\youtube-dl.exe" />
-    <Resource Include="youtube-dl\yt-dlp.exe" />
+    <Content Include="youtube-dl\ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="youtube-dl\ffplay.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="youtube-dl\ffprobe.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="youtube-dl\youtube-dl.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="youtube-dl\yt-dlp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

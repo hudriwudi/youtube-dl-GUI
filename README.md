@@ -6,9 +6,9 @@ This program incorporates yt-dlp. The developer is in no way associated with the
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
 ## Download
-[Release (v1.0.3)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.3)
+[Release (v1.0.4)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.4)
 
-[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.3/yt-dl-GUI-setup.msi)
+[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.4/yt-dl-GUI-setup.msi)
 
 For the installation to be successful, downloading .Net Core 7.0.0 is necessary. This can be done under [this link](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer?cid=getdotnetcore).
 
@@ -28,4 +28,4 @@ For this purpose, the developer recommends using [MP3Gain](https://mp3gain.sourc
 Direct download available [here](https://sourceforge.net/projects/mp3gain/files/MP3Gain-Windows%20%28Stable%29/1.2.5/mp3gain-win-1_2_5.exe/download).
 
 © Kristoferitsch Daniel
-09.04.2023
+04.06.2023S

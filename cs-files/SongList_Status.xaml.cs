@@ -1,16 +1,24 @@
 ﻿using ATL;
+using Genius;
 using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Xml;
+using TagLib;
+using TagLib.Id3v2;
 
 namespace youtube_dl_v2
 {
@@ -30,6 +38,7 @@ namespace youtube_dl_v2
         bool _shown;
         bool downloadStarted;
         bool retryDownload;
+        bool addingLyrics;
         public bool allSongsDownloaded;
         string strCmdText;
         string downloadType;
@@ -166,6 +175,93 @@ namespace youtube_dl_v2
                 worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
             }
 
+            worker.ReportProgress(0, "Adding lyrics...");
+
+            songIndex = 0;
+            addingLyrics = true;
+            foreach (var song in songList)
+            {
+                // for some dubious reason the lyrics can't be found in the Genius API directly.
+                // Therefore I've decided to first access the API to get the regular path to the article
+                // and then to simply web scrape the lyrics
+                // well-written article suggesting this approach: https://bigishdata.com/2016/09/27/getting-song-lyrics-from-geniuss-api-scraping/
+
+                string link = "https://api.genius.com/search?q=";
+                string searchtext = Regex.Replace(song.Artist + " " + song.Songname, " ", "%20");
+                link += searchtext;
+
+                string webData = GetLyricsWebData(link, true);
+
+                int startIndex = webData.IndexOf(@"""url"":") + 7;
+                int stopIndex = webData.IndexOf(',', startIndex) - 1;
+                link = webData[startIndex..stopIndex];
+
+                webData = GetLyricsWebData(link, false);
+
+                if (webData != null && !webData.Contains("Lyrics for this song have yet to be released.") && !webData.Contains("The lyrics for this song have yet to be transcribed.")) // website/lyrics couldn't be accessed
+                {
+                    // web scraping (could be prone to errors if genius.com decides to redesign their html)
+                    string lyrics = "";
+                    startIndex = webData.IndexOf("Lyrics__Container-sc-1ynbvzw-5 Dzxov"); // defining the bounds in which to look for the lyrics -> hard coded indices
+                    stopIndex = webData.IndexOf("div class=\"ShareButtons__Root", startIndex);
+                    string lyricsWebData = webData[startIndex..stopIndex];
+                    int stopIndex1, stopIndex2;
+                    stopIndex = 0;
+
+                    // remove italics tags
+                    lyricsWebData = lyricsWebData.Replace("<i>", "");
+                    lyricsWebData = lyricsWebData.Replace("</i>", "");
+
+                    do
+                    {
+                        // lyrics can be found within <br> (plain lyrics) and <span> (annotated lyrics) tags
+                        stopIndex1 = lyricsWebData.IndexOf("<br/>", stopIndex + 1);
+                        stopIndex2 = lyricsWebData.IndexOf("</span>", stopIndex + 1);
+
+                        List<int> closestStopIndex = new List<int>() { stopIndex1, stopIndex2 };
+
+                        for (int i = 1; i >= 0; i--)
+                        {
+                            if (closestStopIndex[i] == -1)
+                                closestStopIndex.RemoveAt(i);
+                        }
+
+                        if (closestStopIndex.Count != 0)
+                            stopIndex = closestStopIndex.Min();
+                        else
+                            break;
+
+                        if (stopIndex > lyricsWebData.Length)
+                            break;
+
+                        startIndex = lyricsWebData.LastIndexOf('>', stopIndex) + 1; // defining the bounds of the tag value
+
+                        if (startIndex < lyricsWebData.Length && startIndex != stopIndex) // still within search bounds && not an empty tag
+                            lyrics += lyricsWebData[startIndex..stopIndex] + "\n"; // reading in the tag value
+                    }
+                    while (startIndex < lyricsWebData.Length);
+
+                    // add last lyric line, as it sometimes isn't enclosed by a <br> tag
+                    int tempIndex = startIndex;
+                    startIndex = stopIndex; // missing tag is right after last read tag
+
+                    // decide wether the last tag was </br> or </span>
+                    if (lyricsWebData.IndexOf("<br/>", tempIndex) != -1)
+                        startIndex += 5; // "<br/>
+                    else
+                        startIndex += 7; // </span>"
+
+                    stopIndex = lyricsWebData.IndexOf('<', startIndex);
+                    lyrics += lyricsWebData[startIndex..stopIndex];
+
+                    song.Lyrics = lyrics;
+
+                    songIndex++;
+                    worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
+                }
+            }
+
+            addingLyrics = false;
             downloadStarted = true;
             worker.ReportProgress(0, "Download started...");
 
@@ -179,12 +275,13 @@ namespace youtube_dl_v2
 
                 // delete excess files
                 var filePaths = Directory.GetFiles("youtube-dl");
+
                 foreach (var filePath in filePaths)
                 {
                     try
                     {
                         if (!filePath.Contains(".exe"))
-                            File.Delete(filePath);
+                            System.IO.File.Delete(filePath);
                     }
                     catch (IOException) // file is still used by another process -> delete later
                     { }
@@ -197,10 +294,11 @@ namespace youtube_dl_v2
 
                 ReportCmdProgress(song, songIndex);
 
-                cmd.WaitForExit();
+                try
+                { cmd.WaitForExit(); }
+                catch (InvalidOperationException) { } // window has been closed while the process was running -> worker has already been closed
 
                 ChangeProperties(song);
-
 
                 if (worker.CancellationPending == true) // window has been closed -> cancel backgroundworker
                 {
@@ -210,7 +308,7 @@ namespace youtube_dl_v2
 
                 WriteToXmlFile(song);
 
-                if (FailedDownloads.IndexOf(song) == -1 && NonConvertableFiles.IndexOf(song) == -1)
+                if (!FailedDownloads.Contains(song) && !NonConvertableFiles.Contains(song))
                     SuccessfulDownloads.Add(song);
             }
 
@@ -230,7 +328,7 @@ namespace youtube_dl_v2
                     try
                     {
                         if (!filePath.Contains(".exe"))
-                            File.Delete(filePath);
+                            System.IO.File.Delete(filePath);
                     }
                     catch (IOException) // exception thrown if file is still used by another thread
                     { }
@@ -395,7 +493,9 @@ namespace youtube_dl_v2
                     lblStatus.Content += "\ndownloaded " + e.ProgressPercentage.ToString() + "/" + FailedDownloads.Count;
                 else
                 {
-                    if (!downloadStarted)
+                    if (addingLyrics)
+                        lblStatus.Content += "\nLyrics added " + e.ProgressPercentage.ToString() + "/" + songList.Count;
+                    else if (!downloadStarted)
                         lblStatus.Content += "\ntags added " + e.ProgressPercentage.ToString() + "/" + songList.Count;
                     else
                         lblStatus.Content += "\ndownloaded " + e.ProgressPercentage.ToString() + "/" + songList.Count;
@@ -407,6 +507,23 @@ namespace youtube_dl_v2
         {
             Thread.Sleep(1000);
             Close();
+        }
+
+        private string GetLyricsWebData(string link, bool accessingAPI)
+        {
+            HttpClient client = new();
+            var request = new HttpRequestMessage(HttpMethod.Get, link);
+            if (accessingAPI)
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Youtube.DecryptText(ConfigurationManager.AppSettings["GeniusAccessToken"]));
+            HttpResponseMessage response;
+            try { response = client.Send(request); }
+            catch (InvalidOperationException)
+            { return null; };
+            var reader = new StreamReader(response.Content.ReadAsStream());
+            string webData = reader.ReadToEnd();
+            webData = HttpUtility.HtmlDecode(webData);
+
+            return webData;
         }
 
         public static string AddGenres(string[] genres)
@@ -506,7 +623,20 @@ namespace youtube_dl_v2
             track.Album = song.Album;
             track.Genre = song.Genres;
             track.Comment = song.Link;
+            track.Lyrics.UnsynchronizedLyrics = song.Lyrics;
             track.Save();
+
+            // set language of comment property as to make it visible in windows explorer
+            if (extension == ".mp3" || extension == ".wav") // other extension types are not supported in TagLib
+            {
+                var file = TagLib.File.Create(myFile.FullName);
+                TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)file.GetTag(TagTypes.Id3v2);
+                CultureInfo cultureInfo = CultureInfo.InstalledUICulture;
+                string language = cultureInfo.ThreeLetterWindowsLanguageName;
+                CommentsFrame frame = CommentsFrame.Get(tag, song.Link, language, true);
+                frame.Text = song.Link;
+                file.Save();
+            }
 
             MoveFile(myFile, song, "music/youtube-dl", 0);
         }
@@ -554,7 +684,7 @@ namespace youtube_dl_v2
                     else // called from Downloaded_ChangeSongInfo.xaml.cs
                     {
                         // overwrite file
-                        File.Delete(destination);
+                        System.IO.File.Delete(destination);
                         file.MoveTo(destination);
                     }
                 }
@@ -564,7 +694,7 @@ namespace youtube_dl_v2
                         file.MoveTo(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + @"\youtube-dl\" + songInfo + " (" + accountsOfFile + ')' + extension);
                     else
                     {
-                        File.Delete(destination);
+                        System.IO.File.Delete(destination);
                         file.MoveTo(destination);
                     }
                 }
@@ -587,6 +717,24 @@ namespace youtube_dl_v2
                     NonConvertableFiles.Add(song);
                 }
             }
+        }
+
+        private async void AddLyrics(Song song)
+        {
+            // access Genius API
+            string apiKey = Youtube.DecryptText(ConfigurationManager.AppSettings["GeniusClientId"]);
+            var geniusClient = new GeniusClient(apiKey);
+
+            // search for song
+            var search = await geniusClient.SearchClient.Search(song.Artist + " " + song.Songname);
+            var songId = search.Response;
+
+            // get lyrics
+            var lyrics = await geniusClient.SongClient.GetSong(378195);
+
+            // add lyrics to song
+
+
         }
 
         protected override void OnClosed(EventArgs e)

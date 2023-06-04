@@ -13,6 +13,7 @@
         public string ID { get; set; }
         public bool IsOfficialArtistChannel { get; set; }
         public string Link { get; set; }
+        public string Lyrics { get; set; }
         public int RankingScore { get; set; }
         public string Songname { get; set; }
         public string ThumbnailSource { get; set; }
