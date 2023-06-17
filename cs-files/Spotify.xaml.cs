@@ -69,12 +69,13 @@ namespace youtube_dl_v2
 
                 case "Song list":
                     winSongList = new SongList(songList);
-                    winSongList.Owner = this;
+                    winSongList.Owner = this.Owner;
                     winSongList.ShowDialog();
                     break;
 
                 case "Downloaded songs":
-                    winDownloads = new Downloaded();
+                    winDownloads = new Downloaded(songList);
+                    winDownloads.Owner = this.Owner;
                     winDownloads.ShowDialog();
                     break;
             }
@@ -157,7 +158,7 @@ namespace youtube_dl_v2
                     rankedsong.RankingScore += 25;
 
                 if (rankedsong.Channel.ToUpper().Contains("OFFICIAL"))
-                    rankedsong.RankingScore += 25;
+                    rankedsong.RankingScore += 20;
 
                 if (rankedsong.Channel.ToUpper().Contains("VEVO"))
                     rankedsong.RankingScore += 25;
@@ -210,7 +211,7 @@ namespace youtube_dl_v2
                     rankedsong.RankingScore -= 20;
 
                 if (TITLE.Contains("TRAILER"))
-                    rankedsong.RankingScore -= 20;
+                    rankedsong.RankingScore -= 25;
 
 
                 // workaround for if statement with logical ORs -> threading errors with background worker (Spotify_Status) 
@@ -261,8 +262,8 @@ namespace youtube_dl_v2
                 else // i = 10
                     rankedsong.RankingScore += (i * 2);
 
-                // filter out songs under 45s
-                if (rankedsong.DurationMS < 45000)
+                // filter out songs under 60s
+                if (rankedsong.DurationMS < 60000)
                     rankedsong.RankingScore -= 1000;
 
                 // time difference > 10s
@@ -512,6 +513,7 @@ namespace youtube_dl_v2
         protected override void OnClosing(CancelEventArgs e)
         {
             Youtube winYoutube = (Youtube)this.Owner;
+            winYoutube.songList.AddRange(songList.Except(winYoutube.songList));
             winYoutube.Show();
 
             base.OnClosing(e);

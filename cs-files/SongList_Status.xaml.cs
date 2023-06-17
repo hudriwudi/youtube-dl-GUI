@@ -150,16 +150,19 @@ namespace youtube_dl_v2
                 {
                     try
                     {
-                        SearchRequest searchRequest = new(SearchRequest.Types.Artist, song.Artist);
-                        var searchResponse = spotifyClient.Search.Item(searchRequest);
-                        var artist = searchResponse.Result.Artists.Items[0];
-                        var genres = spotifyClient.Artists.Get(artist.Id).Result.Genres.ToArray();
-                        song.Genres = AddGenres(genres);
+                        if (song != null)
+                        {
+                            SearchRequest searchRequest = new(SearchRequest.Types.Artist, song.Artist);
+                            var searchResponse = spotifyClient.Search.Item(searchRequest);
+                            var artist = searchResponse.Result.Artists.Items[0];
+                            var genres = spotifyClient.Artists.Get(artist.Id).Result.Genres.ToArray();
+                            song.Genres = AddGenres(genres);
 
-                        searchRequest = new(SearchRequest.Types.Track, song.Artist + " " + song.Songname);
-                        searchResponse = spotifyClient.Search.Item(searchRequest);
-                        var track = searchResponse.Result.Tracks.Items[0];
-                        song.Album = spotifyClient.Tracks.Get(track.Id).Result.Album.Name;
+                            searchRequest = new(SearchRequest.Types.Track, song.Artist + " " + song.Songname);
+                            searchResponse = spotifyClient.Search.Item(searchRequest);
+                            var track = searchResponse.Result.Tracks.Items[0];
+                            song.Album = spotifyClient.Tracks.Get(track.Id).Result.Album.Name;
+                        }
                     }
                     catch (Exception exception)
                     {
@@ -717,24 +720,6 @@ namespace youtube_dl_v2
                     NonConvertableFiles.Add(song);
                 }
             }
-        }
-
-        private async void AddLyrics(Song song)
-        {
-            // access Genius API
-            string apiKey = Youtube.DecryptText(ConfigurationManager.AppSettings["GeniusClientId"]);
-            var geniusClient = new GeniusClient(apiKey);
-
-            // search for song
-            var search = await geniusClient.SearchClient.Search(song.Artist + " " + song.Songname);
-            var songId = search.Response;
-
-            // get lyrics
-            var lyrics = await geniusClient.SongClient.GetSong(378195);
-
-            // add lyrics to song
-
-
         }
 
         protected override void OnClosed(EventArgs e)

@@ -65,7 +65,7 @@ namespace youtube_dl_v2
             string path;
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.4"; // change when releasing new version
+                string currentVersion = "v1.0.5"; // change when releasing new version
 
                 path = Environment.CurrentDirectory + @"\Installation completed (" + currentVersion + ").txt";
                 if (!File.Exists(path) && Environment.UserName != "Daniel")
@@ -204,7 +204,8 @@ namespace youtube_dl_v2
                     break;
 
                 case "Downloaded songs":
-                    winDownloads = new Downloaded();
+                    winDownloads = new Downloaded(songList);
+                    winDownloads.Owner = this;
                     winDownloads.Show();
                     break;
             }
@@ -436,11 +437,11 @@ namespace youtube_dl_v2
         {
             try
             {
-                Ping myPing = new Ping();
-                String host = "google.com";
+                Ping myPing = new();
+                string host = "google.com";
                 byte[] buffer = new byte[32];
                 int timeout = 1000;
-                PingOptions pingOptions = new PingOptions();
+                PingOptions pingOptions = new();
                 PingReply reply = myPing.Send(host, timeout, buffer, pingOptions);
                 return (reply.Status == IPStatus.Success);
             }

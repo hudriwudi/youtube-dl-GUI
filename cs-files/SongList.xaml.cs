@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Web;
 using System.Windows;
@@ -274,17 +275,17 @@ namespace youtube_dl_v2
                     {
                         case "Youtube":
                             var winYoutube = (Youtube)window;
-                            winYoutube.songList = songList;
+                            winYoutube.songList.AddRange(songList.Except(winYoutube.songList));
                             break;
 
                         case "Spotify":
                             var winSpotify = (Spotify)window;
-                            winSpotify.songList = songList;
+                            winSpotify.songList.AddRange(songList.Except(winSpotify.songList));
                             break;
 
                         case "Downloaded":
                             var winDownloaded = (Downloaded)window;
-                            winDownloaded.songList = songList;
+                            winDownloaded.songList.AddRange(songList.Except(winDownloaded.songList));
                             break;
                     }
                 }

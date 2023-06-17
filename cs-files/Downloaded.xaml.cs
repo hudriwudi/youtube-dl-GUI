@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -22,9 +23,11 @@ namespace youtube_dl_v2
         List<DownloadedSong> downloadedSongs;
         public List<Song> songList = new();
 
-        public Downloaded()
+        public Downloaded(List<Song> songList)
         {
             InitializeComponent();
+
+            this.songList = songList;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -121,14 +124,15 @@ namespace youtube_dl_v2
                 {
                     songList.Add((Song)datagridSongs.SelectedItems[i]);
                 }
+
+
+                if (winSongList != null)
+                    winSongList.Close();
+
+                winSongList = new(songList);
+                winSongList.Owner = this;
+                winSongList.Show();
             }
-
-            if (winSongList != null)
-                winSongList.Close();
-
-            winSongList = new(songList);
-            winSongList.Owner = this;
-            winSongList.Show();
         }
 
         private void CmdChangeInfo_Click(object sender, RoutedEventArgs e)
@@ -259,6 +263,23 @@ namespace youtube_dl_v2
                     File.Move(newPath, path);
                 }
             }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            if (winSongList != null)
+                songList.AddRange(winSongList.songList.Except(songList)); // append song list without duplicates
+
+            Youtube winYoutube = (Youtube)this.Owner;
+            winYoutube.songList.AddRange(songList.Except(winYoutube.songList));
+
+            try
+            {
+                this.Owner = null; // solves the minimizing of owner window after closing child window
+            }
+            catch (InvalidOperationException) { }
         }
     }
 }
