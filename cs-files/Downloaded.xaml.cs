@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,7 +9,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml;
-using Windows.ApplicationModel.VoiceCommands;
 
 namespace youtube_dl_v2
 {
@@ -19,7 +19,6 @@ namespace youtube_dl_v2
     {
         SongList winSongList;
         Downloaded_ChangeSongInfo winChange;
-        Downloaded_ChooseSong winChoose;
         List<DownloadedSong> downloadedSongs;
         public List<Song> songList = new();
 
@@ -137,35 +136,22 @@ namespace youtube_dl_v2
 
         private void CmdChangeInfo_Click(object sender, RoutedEventArgs e)
         {
-            if (datagridSongs.SelectedIndex != -1)
+            // select file
+
+            OpenFileDialog fileDialog = new();
+            fileDialog.Filter = "Audio Files|*.mp3;*.wav;*.opus;*.m4a;*.mp4";
+            fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            fileDialog.ShowDialog();
+            // open new window
+
+            if (fileDialog.FileName != null)
             {
-                DownloadedSong song = (DownloadedSong)datagridSongs.SelectedItem;
-                string[] searchResult = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), song.Artist + " - " + song.Songname + ".mp3", SearchOption.AllDirectories);
+                string path = fileDialog.FileName;
+                winChange = new Downloaded_ChangeSongInfo(path);
+                winChange.ShowDialog();
 
-                if (searchResult.Length == 0)
-                    MessageBox.Show("No matching file found. Please make sure that the file exists in your music folder.", "Error");
-                else if (searchResult.Length == 1)
-                {
-                    winChange = new Downloaded_ChangeSongInfo(song, searchResult[0]);
-                    winChange.ShowDialog();
-                }
-                else
-                {
-                    winChoose = new Downloaded_ChooseSong(searchResult);
-                    winChoose.ShowDialog();
-                    winChange = new Downloaded_ChangeSongInfo(song, searchResult[winChoose.index]);
-                    winChange.ShowDialog();
-                }
-
-                if (searchResult.Length != 0)
-                {
-                    if (winChange.fileChanged)
-                    {
-                        songList.Remove(song);
-                        songList.Insert(datagridSongs.SelectedIndex, winChange.song);
-                        LoadXmlToDataGrid();
-                    }
-                }
+                if (winChange.fileChanged)
+                    MessageBox.Show("The file \"" + fileDialog.SafeFileName + "\" was successfully modified.", "Modification successfull", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

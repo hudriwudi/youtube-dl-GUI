@@ -225,7 +225,7 @@ namespace youtube_dl_v2
                             rankedsong.RankingScore += 15;
                             abort = true;
                         }
-                } 
+                }
 
                 string DESCRIPTION = rankedsong.Description.ToUpper();
 
@@ -275,7 +275,8 @@ namespace youtube_dl_v2
                     if (timeDifference < 0)
                         timeDifference *= -1;
 
-                    // for every second over 10s the score reduction is increased by 0.5
+                    // for every second over 10s the score reduction is increased by 0
+                    // 
                     if (timeDifference > 10000)
                         rankedsong.RankingScore -= (int)Math.Round((timeDifference - 10000) / 2000);
                 }

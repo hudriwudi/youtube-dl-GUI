@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		App.config = App.config
 	EndProjectSection
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "yt-dl-GUI-setup", "..\yt-dl-GUI-setup\yt-dl-GUI-setup.vdproj", "{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "yt-dl_GUI_setup", "..\yt-dl_GUI_setup\yt-dl_GUI_setup.vdproj", "{9659778B-7C0B-4732-9E17-7777660355E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,8 +22,8 @@ Global
 		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF24B357-FD3E-4F62-8D0B-D27584293F4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}.Debug|Any CPU.ActiveCfg = Debug
-		{7ACFAD29-BF7D-4285-84DE-8192A16A2D30}.Release|Any CPU.ActiveCfg = Release
+		{9659778B-7C0B-4732-9E17-7777660355E4}.Debug|Any CPU.ActiveCfg = Debug
+		{9659778B-7C0B-4732-9E17-7777660355E4}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

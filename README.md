@@ -1,14 +1,15 @@
 # YouTube-dl GUI
 GUI for downloading YouTube videos (+ additional features). Mainly designed for downloading music.
 
-This program incorporates yt-dlp. The developer is in no way associated with the authors of yt-dlp or youtube-dl.
+This program incorporates 
+. The developer is in no way associated with the authors of yt-dlp or youtube-dl.
 
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
 ## Download
-[Release (v1.0.5)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.5)
+[Release (v1.0.6)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.6)
 
-[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.5/yt-dl-GUI-setup.msi)
+[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.6/yt-dl-GUI-setup.msi)
 
 For the installation to be successful, downloading .Net Core 7.0.0 is necessary. This can be done under [this link](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer?cid=getdotnetcore).
 
@@ -28,4 +29,4 @@ For this purpose, the developer recommends using [MP3Gain](https://mp3gain.sourc
 Direct download available [here](https://sourceforge.net/projects/mp3gain/files/MP3Gain-Windows%20%28Stable%29/1.2.5/mp3gain-win-1_2_5.exe/download).
 
 © Kristoferitsch Daniel
-17.06.2023
+03.11.2024

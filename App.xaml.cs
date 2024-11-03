@@ -57,7 +57,7 @@ namespace youtube_dl_v2
             email.From.Add(new MailboxAddress("YouTube-dl GUI Bug reporting", "ytdlguibugreports@gmail.com"));
             email.To.Add(new MailboxAddress("YouTube-dl GUI Bug reporting", "ytdlguibugreports@gmail.com"));
 
-            if (body.Contains("User: Daniel")) // developer is debugging
+            if (body.Contains("User: danie")) // developer is debugging
                 subject += " (debug)";
 
             email.Subject = subject;

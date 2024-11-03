@@ -1,5 +1,4 @@
 ﻿using ATL;
-using Genius;
 using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
@@ -205,9 +204,16 @@ namespace youtube_dl_v2
                 {
                     // web scraping (could be prone to errors if genius.com decides to redesign their html)
                     string lyrics = "";
-                    startIndex = webData.IndexOf("Lyrics__Container-sc-1ynbvzw-5 Dzxov"); // defining the bounds in which to look for the lyrics -> hard coded indices
-                    stopIndex = webData.IndexOf("div class=\"ShareButtons__Root", startIndex);
-                    string lyricsWebData = webData[startIndex..stopIndex];
+                    string lyricsWebData = "";
+                    try
+                    {
+                        startIndex = webData.IndexOf("Lyrics__Container-sc-1ynbvzw"); // defining the bounds in which to look for the lyrics -> hard coded indices
+                        stopIndex = webData.IndexOf("div class=\"ShareButtons__Root", startIndex);
+                        lyricsWebData = webData[startIndex..stopIndex];
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    { lyricsWebData = webData; }
+
                     int stopIndex1, stopIndex2;
                     stopIndex = 0;
 
@@ -263,7 +269,15 @@ namespace youtube_dl_v2
                     worker.ReportProgress(songIndex, song.Artist + " - " + song.Songname);
                 }
             }
-
+            /*
+            // update yt-dlp
+            worker.ReportProgress(0, "updating yt-dlp...");
+            cmd.Start();
+            cmd.StandardInput.WriteLine("yt-dlp -U");
+            cmd.StandardInput.Flush();
+            cmd.StandardInput.Close();
+            cmd.WaitForExit();*/
+            
             addingLyrics = false;
             downloadStarted = true;
             worker.ReportProgress(0, "Download started...");

@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
@@ -65,7 +64,7 @@ namespace youtube_dl_v2
             string path;
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.5"; // change when releasing new version
+                string currentVersion = "v1.0.6"; // change when releasing new version
 
                 path = Environment.CurrentDirectory + @"\Installation completed (" + currentVersion + ").txt";
                 if (!File.Exists(path) && Environment.UserName != "Daniel")

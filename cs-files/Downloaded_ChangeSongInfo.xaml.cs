@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using ATL;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,45 +13,60 @@ namespace youtube_dl_v2
     /// </summary>
     public partial class Downloaded_ChangeSongInfo : Window
     {
-        public DownloadedSong song;
+        public DownloadedSong song = new();
+        Track track;
+        List<string> genres;
         public bool fileChanged;
         string filePath;
 
-        public Downloaded_ChangeSongInfo(DownloadedSong song, string filePath)
+        public Downloaded_ChangeSongInfo(string filePath)
         {
             InitializeComponent();
-            this.song = song;
             this.filePath = filePath;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            txtArtist.Text = song.Artist;
+            // read in metadata
+
+            track = new(filePath);
+
+            song.Songname = track.Title;
+            song.Artist = track.Artist;
+            song.Album = track.Album;
+            song.Genres = track.Genre;
+            song.Link = track.Comment;
+
             txtSongname.Text = song.Songname;
-            txtLink.Text = song.Link;
+            txtArtist.Text = song.Artist;
             txtAlbum.Text = song.Album;
+            txtLink.Text = song.Link;
 
             if (song.Genres != null)
             {
-                string tempGenres = song.Genres;
-                List<string> genres = new List<string>();
+                genres = new();
                 int index;
                 do
                 {
-                    index = tempGenres.IndexOf(';');
+                    index = song.Genres.IndexOf(';');
                     if (index != -1)
                     {
-                        string genre = tempGenres[0..index];
+                        string genre = song.Genres[0..index];
                         genres.Add(genre);
-                        tempGenres = tempGenres.Remove(0, index + 1);
+                        song.Genres = song.Genres.Remove(0, index + 1);
                     }
                 }
                 while (index != -1);
 
-                txtGenres_1.Text = genres[0];
-                txtGenres_2.Text = genres[1];
-                txtGenres_3.Text = genres[2];
+                try
+                {
+                    txtGenres_1.Text = genres[0];
+                    txtGenres_2.Text = genres[1];
+                    txtGenres_3.Text = genres[2];
+                }
+                catch (ArgumentOutOfRangeException) { }
             }
+
 
             txtArtist.Focus();
             txtArtist.SelectAll();
@@ -58,61 +74,37 @@ namespace youtube_dl_v2
 
         private void CmdChange_Click(object sender, RoutedEventArgs e)
         {
-            // code adapted from SongList_Status.xaml.cs
+            // modify metadata
 
-            song.Artist = txtArtist.Text;
-            song.Songname = txtSongname.Text;
-            song.Link = txtLink.Text;
-            song.Album = txtAlbum.Text;
+            track.Title = txtSongname.Text;
+            track.Artist = txtArtist.Text;
+            track.Album = txtAlbum.Text;
+            track.Comment = txtLink.Text;
 
-            string genres = txtGenres_1.Text + ";" + txtGenres_2.Text + ";" + txtGenres_3.Text;
+            // combine genres to a single string
+            genres = new();
+            genres.AddRange(new string[] { txtGenres_1.Text, txtGenres_2.Text, txtGenres_3.Text });
 
-            int index1 = genres.IndexOf(';');
-            int index2 = genres.LastIndexOf(';');
+            string strGenres = "";
+            foreach (string genre in genres)
+            {
+                if (genre != string.Empty)
+                {
+                    strGenres += genre + ';';
+                }
+            }
 
-            if (index1 == 0 || index1 + 1 == index2)
-                genres.Remove(index1);
+            track.Genre = strGenres;
+            track.Save();
 
-            if (index2 == genres.Length - 1)
-                genres.Remove(index2);
+            // rename file
+            string fileDir = filePath.Remove(filePath.LastIndexOf('\\'));
+            string fileName = track.Artist + " - " + track.Title;
+            string fileExtension = Path.GetExtension(filePath);
+            string newFilePath = fileDir + '\\' + fileName + fileExtension;
+            File.Move(filePath, newFilePath);
 
-            song.Genres = genres;
-
-
-            var myFile = new FileInfo(filePath);
-
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.WorkingDirectory = @"youtube-dl\";
-            cmd.StartInfo.RedirectStandardInput = true;
-            cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-
-            SongList_Status winSongList_Status = new(null, null);
-            song.Artist = winSongList_Status.RemoveForbiddenCharacters(song.Artist);
-            song.Songname = winSongList_Status.RemoveForbiddenCharacters(song.Songname);
-
-            string songInfo = song.Artist + " - " + song.Songname;
-            string newFileName = myFile.DirectoryName + @"\" + songInfo + myFile.Extension;
-
-            string strCmdText = "ffmpeg -i " + '"' + myFile.FullName + '"' + " -metadata title=" + '"' + song.Songname + '"' + " -metadata artist=" + '"' + song.Artist + '"' + " -metadata album=" + '"' + song.Album + '"' + " -metadata comment=" + '"' + song.Link + '"' + " -c copy " + '"' + newFileName + '"';
-            strCmdText = strCmdText.Insert(strCmdText.LastIndexOf("."), "(2)");
-
-            cmd.Start();
-            cmd.StandardInput.WriteLine(strCmdText);
-            cmd.StandardInput.Flush();
-            cmd.StandardInput.Close();
-            cmd.WaitForExit();
-
-            // ffmpeg can't overwrite existing files -> stored under new name -> myFile has to be assigned to new file
-            string tempFileName = newFileName.Insert(newFileName.LastIndexOf("."), "(2)");
-            myFile = new(tempFileName);
-
-            winSongList_Status.MoveFile(myFile, song, newFileName, 0);
-
-            File.Delete(filePath); // delete original file
-
+            fileChanged = true;
             Close();
         }
 
@@ -120,7 +112,16 @@ namespace youtube_dl_v2
         {
             txtArtist.Text = song.Artist;
             txtSongname.Text = song.Songname;
+            txtAlbum.Text = song.Album;
             txtLink.Text = song.Link;
+
+            try
+            {
+                txtGenres_1.Text = genres[0];
+                txtGenres_2.Text = genres[1];
+                txtGenres_3.Text = genres[2];
+            }
+            catch (ArgumentOutOfRangeException) { }
         }
 
         private void CmdCancel_Click(object sender, RoutedEventArgs e)
