@@ -64,7 +64,7 @@ namespace youtube_dl_v2
             string path;
             if (IsConnectedToInternet())
             {
-                string currentVersion = "v1.0.6"; // change when releasing new version
+                string currentVersion = "v1.0.7"; // change when releasing new version
 
                 path = Environment.CurrentDirectory + @"\Installation completed (" + currentVersion + ").txt";
                 if (!File.Exists(path) && Environment.UserName != "Daniel")
@@ -377,29 +377,28 @@ namespace youtube_dl_v2
             int hours = 0;
             int minutes = 0;
             int seconds;
+            string strMinutes;
             string strSeconds;
             string duration;
 
             if (DurationMS > 59999) // > 1min
             {
-                minutes = Convert.ToInt32(Math.Floor(DurationMS / 60000));
-                seconds = Convert.ToInt32((DurationMS % 60000) / 1000);
+                minutes = Convert.ToInt32(Math.Floor((DurationMS % 3600000) / 60000));
+                seconds = Convert.ToInt32(Math.Floor((DurationMS % 60000) / 1000));
             }
             else
                 seconds = Convert.ToInt32(DurationMS / 1000);
 
-            if (seconds < 10)
-                strSeconds = "0" + seconds.ToString();
-            else
-                strSeconds = seconds.ToString();
-
+            strSeconds = seconds < 10 ? "0" + seconds.ToString() : seconds.ToString();
+            strMinutes = minutes < 10 ? "0" + minutes.ToString() : minutes.ToString();
+            
             if (DurationMS > 3599999) // >1h
                 hours = Convert.ToInt32(DurationMS / 3600000);
 
             if (hours == 0)
-                duration = minutes + ":" + strSeconds;
+                duration = strMinutes + ":" + strSeconds;
             else
-                duration = hours + ":" + minutes + ":" + strSeconds;
+                duration = hours + ":" + strMinutes + ":" + strSeconds;
 
             return duration;
         }

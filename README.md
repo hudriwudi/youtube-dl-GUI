@@ -7,9 +7,9 @@ This program incorporates
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
 ## Download
-[Release (v1.0.6)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.6)
+[Release (v1.0.7)](https://github.com/hudriwudi/youtube-dl-GUI/releases/tag/v1.0.7)
 
-[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.6/yt-dl_GUI_setup.msi)
+[Download .msi](https://github.com/hudriwudi/youtube-dl-GUI/releases/download/v1.0.7/yt-dl_GUI_setup.msi)
 
 For the installation to be successful, downloading .Net Core 7.0.0 is necessary. This can be done under [this link](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-7.0.0-windows-x64-installer?cid=getdotnetcore).
 
