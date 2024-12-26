@@ -1,8 +1,7 @@
 # YouTube-dl GUI
 GUI for downloading YouTube videos (+ additional features). Mainly designed for downloading music.
 
-This program incorporates 
-. The developer is in no way associated with the authors of yt-dlp or youtube-dl.
+This program incorporates yt-dlp. The developer is in no way associated with the authors of yt-dlp or youtube-dl.
 
 The developer strongly discourages pirating licensed copyright material for commercial purposes. It is made for private use only.
 
@@ -29,4 +28,4 @@ For this purpose, the developer recommends using [MP3Gain](https://mp3gain.sourc
 Direct download available [here](https://sourceforge.net/projects/mp3gain/files/MP3Gain-Windows%20%28Stable%29/1.2.5/mp3gain-win-1_2_5.exe/download).
 
 © Kristoferitsch Daniel
-19.12.2024
+26.12.2024

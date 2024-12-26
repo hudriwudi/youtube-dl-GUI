@@ -37,8 +37,6 @@ namespace youtube_dl_v2
         {
             InitializeComponent();
 
-            this.Icon = new BitmapImage(new Uri("yt-dl-logo.ico", UriKind.Relative));
-
             if (songList != null)
                 this.songList = songList;
 
